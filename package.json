@@ -13,10 +13,12 @@
     "@nuxt/eslint": "^1.17.0",
     "@nuxtjs/seo": "^5.3.12",
     "@prisma/client": "^7.9.1",
+    "chart.js": "^4.5.1",
     "eslint": "^10.8.1",
     "nuxt": "^4.5.2",
     "nuxt-auth-utils": "^0.5.30",
     "vue": "^3.5.41",
+    "vue-chartjs": "^5.3.4",
     "vue-router": "^5.2.0",
     "zod": "^4.4.3"
   },
