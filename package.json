@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@nuxt/eslint": "^1.17.0",
+    "@nuxtjs/seo": "^5.3.12",
     "eslint": "^10.8.1",
     "nuxt": "^4.5.2",
     "nuxt-auth-utils": "^0.5.30",
