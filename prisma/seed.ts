@@ -12,6 +12,7 @@ const prisma = new PrismaClient({ adapter })
 const hasher = new Hash(new Scrypt({}))
 
 const DEMO_PASSWORD = 'ZenTime2026!'
+const COMPANY_DOMAIN = 'zentime.demo'
 const HISTORY_DAYS = 30
 
 // PRNG déterministe : deux exécutions produisent le même jeu de données.
@@ -87,7 +88,9 @@ async function main() {
   await prisma.company.deleteMany()
   await prisma.exercise.deleteMany()
 
-  const company = await prisma.company.create({ data: { name: 'Nova Solutions' } })
+  const company = await prisma.company.create({
+    data: { name: 'Nova Solutions', emailDomain: COMPANY_DOMAIN },
+  })
 
   await prisma.subscription.create({
     data: {
@@ -112,7 +115,7 @@ async function main() {
   const users = []
 
   for (const person of roster) {
-    const email = `${person.firstName}.${person.lastName}@zentime.demo`.toLowerCase()
+    const email = `${person.firstName}.${person.lastName}@${COMPANY_DOMAIN}`.toLowerCase()
 
     const user = await prisma.user.create({
       data: {
@@ -187,7 +190,7 @@ async function main() {
   await prisma.moodCheckIn.createMany({ data: moods })
   await prisma.exerciseLog.createMany({ data: logs })
 
-  console.log(`Entreprise      : ${company.name}`)
+  console.log(`Entreprise      : ${company.name} (@${company.emailDomain})`)
   console.log(`Équipes         : Produit (6 membres), Support (3 membres)`)
   console.log(`Utilisateurs    : ${users.length}`)
   console.log(`Exercices       : ${createdExercises.length}`)

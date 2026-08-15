@@ -43,8 +43,11 @@ enum SubscriptionStatus {
 }
 
 model Company {
-  id           String        @id @default(cuid())
-  name         String
+  id   String @id @default(cuid())
+  name String
+  // Rattachement d'un inscrit à son entreprise : le domaine de son adresse
+  // professionnelle. Une adresse hors domaine enregistré ne peut pas s'inscrire.
+  emailDomain  String        @unique
   createdAt    DateTime      @default(now())
   teams        Team[]
   users        User[]
