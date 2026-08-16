@@ -37,6 +37,15 @@ export const registerSchema = z.object({
   acceptTerms: z.literal(true, 'Les conditions d\'utilisation doivent être acceptées.'),
 })
 
+// Aucune règle de robustesse à la connexion : elles s'appliquent au choix d'un
+// mot de passe, pas à sa saisie. Les exiger ici refuserait un mot de passe
+// légitime créé sous des règles antérieures, et renseignerait au passage un
+// attaquant sur la forme du mot de passe recherché.
+export const loginSchema = z.object({
+  email: emailSchema,
+  password: z.string('Mot de passe requis.').min(1, 'Mot de passe requis.'),
+})
+
 export const resendVerificationSchema = z.object({
   email: emailSchema,
 })
