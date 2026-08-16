@@ -2,6 +2,8 @@
 // CU-02.1 — Confirmer son adresse. La page consomme le jeton par un POST : un
 // antivirus de messagerie qui prélit le lien ne l'active donc pas, alors qu'il
 // suivrait volontiers une URL en GET.
+definePageMeta({ layout: 'auth' })
+
 useSeoMeta({ title: 'Confirmation de votre adresse' })
 
 type Status = 'pending' | 'verified' | 'already_verified' | 'failed' | 'no_token'
@@ -63,64 +65,88 @@ async function resend() {
 </script>
 
 <template>
-  <main>
-    <h1>Confirmation de votre adresse</h1>
+  <div>
+    <h1 class="font-display text-[1.75rem]/[1.1] text-fg">
+      Confirmation de votre adresse
+    </h1>
 
-    <p
+    <AppAlert
       v-if="status === 'pending'"
       role="status"
+      tone="info"
+      class="mt-5"
     >
       Vérification du lien en cours…
-    </p>
+    </AppAlert>
 
     <div v-else-if="status === 'verified' || status === 'already_verified'">
-      <p role="status">
+      <AppAlert
+        role="status"
+        tone="success"
+        class="mt-5"
+      >
         {{ message }}
-      </p>
-      <NuxtLink to="/connexion">
+      </AppAlert>
+
+      <NuxtLink
+        to="/connexion"
+        class="mt-5 block w-full rounded-lg bg-accent px-4 py-3.5 text-center text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong"
+      >
         Se connecter
       </NuxtLink>
     </div>
 
-    <div v-else>
-      <p role="alert">
-        {{ status === 'no_token' ? 'Ce lien est incomplet : il ne contient aucun jeton de confirmation.' : message }}
-      </p>
-    </div>
+    <AppAlert
+      v-else
+      role="alert"
+      tone="danger"
+      class="mt-5"
+    >
+      {{ status === 'no_token' ? 'Ce lien est incomplet : il ne contient aucun jeton de confirmation.' : message }}
+    </AppAlert>
 
-    <section v-if="canResend">
-      <h2>Recevoir un nouveau lien</h2>
-      <p>Le lien précédent sera alors invalidé.</p>
+    <section
+      v-if="canResend"
+      class="mt-6 border-t border-border pt-5"
+    >
+      <h2 class="text-label font-bold text-fg">
+        Recevoir un nouveau lien
+      </h2>
+      <p class="mt-1 text-caption/[1.5] text-fg-muted">
+        Le lien précédent sera alors invalidé.
+      </p>
 
       <form
         novalidate
+        class="mt-4 flex flex-col gap-4"
         @submit.prevent="resend"
       >
-        <p>
-          <label for="resendEmail">Adresse email</label>
-          <input
-            id="resendEmail"
-            v-model="resendEmail"
-            type="email"
-            autocomplete="email"
-            required
-          >
-        </p>
+        <AppField
+          id="resendEmail"
+          v-model="resendEmail"
+          label="Adresse email"
+          type="email"
+          autocomplete="email"
+          required
+        />
 
         <button
           type="submit"
           :disabled="resending"
+          class="w-full rounded-lg bg-accent px-4 py-3.5 text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
         >
           {{ resending ? 'Envoi en cours…' : 'Envoyer un nouveau lien' }}
         </button>
       </form>
 
-      <p
+      <AppAlert
         v-if="resendMessage"
         role="status"
+        tone="success"
+        class="mt-4"
       >
         {{ resendMessage }}
-      </p>
+      </AppAlert>
     </section>
-  </main>
+  </div>
 </template>

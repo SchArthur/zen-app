@@ -1,5 +1,7 @@
 <script setup lang="ts">
 // CU-03 — S'authentifier.
+definePageMeta({ layout: 'auth' })
+
 useSeoMeta({ title: 'Connexion' })
 
 const route = useRoute()
@@ -64,87 +66,94 @@ async function resend() {
 </script>
 
 <template>
-  <main>
-    <h1>Connexion</h1>
+  <div>
+    <h1 class="font-display text-[1.75rem]/[1.1] text-fg">
+      Content de vous revoir
+    </h1>
+    <p class="mt-1.5 text-label/[1.45] font-medium text-mist-600">
+      Connectez-vous pour retrouver votre tableau de bord.
+    </p>
 
     <form
       novalidate
+      class="mt-6 flex flex-col gap-4"
       @submit.prevent="submit"
     >
-      <p
+      <AppAlert
         v-if="message"
         role="alert"
+        tone="danger"
       >
         {{ message }}
-      </p>
+      </AppAlert>
 
-      <p>
-        <label for="email">Adresse email</label>
-        <input
-          id="email"
-          v-model="form.email"
-          type="email"
-          autocomplete="email"
-          required
-          :aria-invalid="Boolean(errors.email)"
-          :aria-describedby="errors.email ? 'email-error' : undefined"
-        >
-        <span
-          v-if="errors.email"
-          id="email-error"
-        >{{ errors.email.join(' ') }}</span>
-      </p>
+      <AppField
+        id="email"
+        v-model="form.email"
+        label="Adresse email"
+        type="email"
+        autocomplete="email"
+        required
+        :errors="errors.email"
+      />
 
-      <p>
-        <label for="password">Mot de passe</label>
-        <input
-          id="password"
-          v-model="form.password"
-          type="password"
-          autocomplete="current-password"
-          required
-          :aria-invalid="Boolean(errors.password)"
-          aria-describedby="password-error"
-        >
-        <span
-          v-if="errors.password"
-          id="password-error"
-        >{{ errors.password.join(' ') }}</span>
-      </p>
+      <AppField
+        id="password"
+        v-model="form.password"
+        label="Mot de passe"
+        type="password"
+        autocomplete="current-password"
+        required
+        :errors="errors.password"
+      />
 
       <button
         type="submit"
         :disabled="pending"
+        class="mt-1 w-full rounded-lg bg-accent px-4 py-3.5 text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
       >
         {{ pending ? 'Connexion en cours…' : 'Se connecter' }}
       </button>
     </form>
 
-    <section v-if="notVerified">
-      <h2>Adresse non confirmée</h2>
-      <p>Votre compte existe mais reste inactif tant que son adresse n'est pas confirmée.</p>
+    <section
+      v-if="notVerified"
+      class="mt-5 rounded-xl bg-surface-soft px-4.5 py-4"
+    >
+      <h2 class="text-label font-bold text-fg">
+        Adresse non confirmée
+      </h2>
+      <p class="mt-1 text-caption/[1.5] text-fg-muted">
+        Votre compte existe mais reste inactif tant que son adresse n'est pas confirmée.
+      </p>
 
       <button
         type="button"
         :disabled="resending"
+        class="mt-3 w-full rounded-lg bg-surface px-4 py-2.75 text-caption/none font-bold text-fg-soft shadow-soft transition-colors hover:text-accent-strong disabled:opacity-60"
         @click="resend"
       >
         {{ resending ? 'Envoi en cours…' : 'Recevoir un nouveau lien de confirmation' }}
       </button>
 
-      <p
+      <AppAlert
         v-if="resendMessage"
         role="status"
+        tone="success"
+        class="mt-3"
       >
         {{ resendMessage }}
-      </p>
+      </AppAlert>
     </section>
 
-    <p>
+    <p class="mt-6 text-center text-label text-fg-subtle">
       Pas encore de compte ?
-      <NuxtLink to="/inscription">
+      <NuxtLink
+        to="/inscription"
+        class="font-bold text-accent-strong underline-offset-2 hover:underline"
+      >
         Créer un compte
       </NuxtLink>
     </p>
-  </main>
+  </div>
 </template>
