@@ -80,7 +80,7 @@ async function submit() {
           autocomplete="given-name"
           required
           :aria-invalid="Boolean(errors.firstName)"
-          aria-describedby="firstName-error"
+          :aria-describedby="errors.firstName ? 'firstName-error' : undefined"
         >
         <span
           v-if="errors.firstName"
