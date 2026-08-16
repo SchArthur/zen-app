@@ -8,6 +8,13 @@ export default defineNuxtConfig({
   // Chaque clé est surchargeable en production par la variable d'environnement
   // correspondante : mail.host ← NUXT_MAIL_HOST, public.siteUrl ← NUXT_PUBLIC_SITE_URL.
   runtimeConfig: {
+    // Le mot de passe de scellement vient de NUXT_SESSION_PASSWORD, jamais du code.
+    session: {
+      // Une journée de travail : au-delà, la session expire d'elle-même. Le
+      // cookie est httpOnly et sameSite=lax par défaut, et passe en secure
+      // dès que l'application est servie en HTTPS.
+      maxAge: 60 * 60 * 8,
+    },
     mail: {
       host: 'localhost',
       port: 1025,
