@@ -1,0 +1,321 @@
+/* Polices de la maquette : Manrope (interface & données), Newsreader (titres & accueil). */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
+@import 'tailwindcss';
+
+/* `static` force l'émission de toutes les variables, même celles qu'aucune classe
+   n'utilise encore : indispensable pour les tokens lus en JS (Chart.js) et pour
+   ceux qui n'existent que via un alias sémantique. */
+@theme static {
+  /* ══════════ Typographie ══════════ */
+
+  --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-serif: 'Newsreader', ui-serif, Georgia, serif;
+  /* Alias de lecture : les titres et messages d'accueil passent en sérif. */
+  --font-display: 'Newsreader', ui-serif, Georgia, serif;
+
+  /* Deux crans sous `text-xs`, absents de l'échelle par défaut mais très présents
+     dans la maquette (barre d'onglets, légendes d'axes, libellés de cartes). */
+  --text-2xs: 0.625rem; /* 10px — micro-libellés (barre d'onglets mobile) */
+  --text-2xs--line-height: 1;
+  --text-caption: 0.6875rem; /* 11px — légendes d'axes, unités */
+  --text-caption--line-height: 1.2;
+  --text-label: 0.8125rem; /* 13px — libellés de cartes, items de navigation */
+  --text-label--line-height: 1.2;
+
+  --tracking-brand: -0.02em; /* logotype ZenTime et grands nombres */
+  --tracking-eyebrow: 0.09em; /* sur-titres en capitales */
+
+  --leading-prose: 1.65; /* paragraphes de contenu */
+
+  /* ══════════ Palette brute ══════════ */
+
+  /* Neutres tièdes verdis — fonds, séparateurs et toute la hiérarchie de texte.
+     Ramp volontairement irrégulière : chaque cran est une valeur réelle de la maquette. */
+  --color-mist-50: #fafbf9;
+  --color-mist-100: #f2f6f1; /* fond de l'application */
+  --color-mist-200: #eaf0ea; /* piste des jauges circulaires */
+  --color-mist-300: #e3eae3; /* piste des barres de progression */
+  --color-mist-400: #b0b0a8; /* texte désactivé */
+  --color-mist-500: #9a9890; /* texte très discret */
+  --color-mist-600: #8a9089; /* sous-titres */
+  --color-mist-700: #7d847d; /* libellés de cartes */
+  --color-mist-800: #5b635c; /* texte courant */
+  --color-mist-900: #4a524c; /* texte appuyé */
+  --color-mist-950: #2c362f; /* encre — titres, boutons sombres */
+
+  /* Sauge — accent par défaut, couleur du bien-être et des états positifs. */
+  --color-sage-50: #f2f6f1;
+  --color-sage-100: #e6f0e8; /* fonds d'état actif, pastilles */
+  --color-sage-200: #dcebe1; /* aires sous courbe */
+  --color-sage-300: #c7dbcd;
+  --color-sage-400: #a9cbb6;
+  --color-sage-500: #8cb69c;
+  --color-sage-600: #5e9576; /* accent */
+  --color-sage-700: #48745c; /* accent appuyé — texte sur fond sauge clair */
+  --color-sage-800: #3a5d4a;
+  --color-sage-900: #27412f;
+
+  /* Ciel — second accent, réservé à l'information neutre et aux vues agrégées. */
+  --color-ciel-50: #f3f8fb;
+  --color-ciel-100: #e4eef6;
+  --color-ciel-200: #e7eff5; /* bandeaux d'information */
+  --color-ciel-300: #9cc6d6;
+  --color-ciel-400: #7fb0ce;
+  --color-ciel-500: #7ba5c7;
+  --color-ciel-600: #5b8fb8;
+  --color-ciel-700: #3f6e94;
+  --color-ciel-800: #345876;
+  --color-ciel-900: #24405b;
+
+  /* Lavande — troisième accent, catégories et séries de graphiques. */
+  --color-lavande-50: #f6f5fb;
+  --color-lavande-100: #eceaf6;
+  --color-lavande-200: #dcd8ee;
+  --color-lavande-300: #c3bce0;
+  --color-lavande-400: #a79dd0;
+  --color-lavande-500: #9a8ec6;
+  --color-lavande-600: #8478b8;
+  --color-lavande-700: #5f5494;
+  --color-lavande-800: #4e4479;
+  --color-lavande-900: #363058;
+
+  /* Sable — attention douce : surcharge, temps assis prolongé, quotas. */
+  --color-sable-50: #fbf2e8;
+  --color-sable-100: #f6e7d3;
+  --color-sable-200: #efd6b4;
+  --color-sable-300: #e6c79a;
+  --color-sable-400: #e0bd93;
+  --color-sable-500: #e0a85b;
+  --color-sable-600: #c98a5e;
+  --color-sable-700: #a97544;
+  --color-sable-800: #9a6a36; /* texte sur fond sable clair */
+  --color-sable-900: #6e4b26;
+
+  /* Argile — erreurs et humeurs basses. Jamais de rouge vif : la charte interdit
+     l'alarme agressive. */
+  --color-argile-50: #fbf0ee;
+  --color-argile-100: #f6e0dc;
+  --color-argile-200: #efc7c1;
+  --color-argile-300: #e0a8a0;
+  --color-argile-400: #d6928a;
+  --color-argile-500: #c77b72;
+  --color-argile-600: #b0655c;
+  --color-argile-700: #8e4e46;
+  --color-argile-800: #6f3b35;
+  --color-argile-900: #4c2823;
+
+  /* ══════════ Tokens sémantiques ══════════ */
+
+  /* Surfaces. Valeurs littérales et non `var(…)` : un alias en chaîne casse dès
+     que la variable pointée est absente du CSS émis. */
+  --color-app: #f2f6f1; /* fond de la zone de contenu (mist-100) */
+  --color-surface: #ffffff; /* cartes, barre latérale, barre d'onglets */
+  --color-surface-soft: #f2f6f1; /* encarts dans une carte blanche */
+  --color-surface-sunken: #eaf0ea; /* pistes, champs en lecture seule */
+  --color-canvas: #e7e5df; /* crème — pages publiques, landing */
+
+  /* Textes, du plus fort au plus discret. */
+  --color-fg: #2c362f;
+  --color-fg-soft: #4a524c; /* paragraphes */
+  --color-fg-muted: #5b635c; /* texte secondaire */
+  --color-fg-subtle: #7d847d; /* libellés de cartes */
+  --color-fg-faint: #9a9890; /* métadonnées, unités */
+  --color-fg-disabled: #b0b0a8;
+  --color-fg-onaccent: #ffffff; /* texte posé sur un aplat d'accent */
+
+  /* Bordures et anneaux. Alpha volontaire : les séparateurs doivent disparaître
+     sur les deux fonds (blanc et mist-100). */
+  --color-border: rgb(80 110 90 / 0.08);
+  --color-border-strong: rgb(80 110 90 / 0.16);
+  --color-ring: #5e9576;
+  --color-placeholder: #9a9890;
+  --color-overlay: rgb(44 54 47 / 0.45); /* voile des modales */
+
+  /* Accent — surchargé à l'exécution par [data-accent] (voir plus bas). */
+  --color-accent: #5e9576;
+  --color-accent-strong: #48745c; /* texte/icône sur --color-accent-soft */
+  --color-accent-soft: #e6f0e8; /* fond d'état actif, pastilles */
+  --color-accent-muted: #c7dbcd; /* barres et aplats secondaires */
+  --color-accent-contrast: #ffffff;
+
+  /* États. Chaque état a un fond doux + une teinte de texte lisible dessus. */
+  --color-success: #5e9576;
+  --color-success-soft: #eef4ef;
+  --color-success-strong: #48745c;
+  --color-info: #5b8fb8;
+  --color-info-soft: #e7eff5;
+  --color-info-strong: #41607d;
+  --color-warning: #d99a5b;
+  --color-warning-soft: #fbf2e8;
+  --color-warning-strong: #9a6a36;
+  --color-danger: #c77b72;
+  --color-danger-soft: #fbf0ee;
+  --color-danger-strong: #8e4e46;
+
+  /* ══════════ Données & visualisation ══════════ */
+
+  /* Échelle d'humeur du check-in quotidien (1 = épuisé → 5 = excellent). */
+  --color-mood-1: #c97f76;
+  --color-mood-2: #e0a8a0;
+  --color-mood-3: #e6c79a;
+  --color-mood-4: #a9cbb6;
+  --color-mood-5: #5e9576;
+  --color-serene: #9cc6d6; /* état « serein », distinct de l'échelle */
+
+  /* Bornes du dégradé de niveau de stress (serein → élevé). */
+  --color-stress-low: #9dc3a6;
+  --color-stress-mid: #e6c79a;
+  --color-stress-high: #e0a0a0;
+
+  /* Séries catégorielles pour vue-chartjs, lues via getComputedStyle. */
+  --color-chart-1: #5e9576;
+  --color-chart-2: #5b8fb8;
+  --color-chart-3: #8478b8;
+  --color-chart-4: #e0bd93;
+  --color-chart-5: #9cc6d6;
+  --color-chart-6: #c98a5e;
+  --color-chart-grid: #eaf0ea; /* grille et axes */
+  --color-chart-area: #dcebe1; /* aire sous courbe */
+
+  /* Bornes des dégradés d'avatar (from-* / to-*). */
+  --color-avatar-mint: #a9c9b4;
+  --color-avatar-sky: #7fb0ce;
+  --color-avatar-periwinkle: #9fb8d6;
+  --color-avatar-lilac: #b0a8d6;
+  --color-avatar-mauve: #c9b4d6;
+
+  /* Halo des cartes de suggestion (dégradé sauge → ciel). */
+  --color-halo-sage: #eaf1ec;
+  --color-halo-sky: #e7eff5;
+
+  /* ══════════ Rayons ══════════ */
+  /* Échelle réalignée sur la maquette — tout est nettement arrondi, « zéro angle vif ». */
+
+  --radius-xs: 0.375rem; /* 6px — puces, micro-badges */
+  --radius-sm: 0.5rem; /* 8px — barres de graphique */
+  --radius-md: 0.75rem; /* 12px — champs de formulaire */
+  --radius-lg: 0.8125rem; /* 13px — boutons, items de navigation */
+  --radius-xl: 1rem; /* 16px — encarts, bandeaux */
+  --radius-2xl: 1.125rem; /* 18px — petites cartes, actions rapides */
+  --radius-3xl: 1.375rem; /* 22px — cartes principales du tableau de bord */
+  --radius-4xl: 2rem; /* modales, feuilles mobiles */
+
+  /* ══════════ Ombres ══════════ */
+  /* Teintées vert-gris : une ombre neutre grise ternit la palette. */
+
+  --shadow-soft: 0 1px 2px rgb(60 80 65 / 0.05); /* cartes secondaires, plates */
+  --shadow-card: 0 1px 2px rgb(60 80 65 / 0.05), 0 12px 30px -16px rgb(60 80 65 / 0.16);
+  --shadow-pop: 0 8px 24px -8px rgb(60 80 65 / 0.22); /* menus, popovers, toasts */
+  --shadow-modal: 0 24px 60px -20px rgb(44 54 47 / 0.35);
+  --shadow-frame: 0 1px 3px rgb(0 0 0 / 0.08); /* cadres de maquette, images */
+
+  /* ══════════ Conteneurs ══════════ */
+
+  --container-sidebar: 15.5rem; /* 248px — barre latérale desktop */
+  --container-phone: 24.5rem; /* 392px — largeur de référence mobile */
+  --container-shell: 82.5rem; /* 1320px — largeur max du tableau de bord */
+  --container-prose: 47.5rem; /* 760px — colonne de texte (CGU, RGPD) */
+
+  /* ══════════ Animations ══════════ */
+
+  --ease-calm: cubic-bezier(0.16, 1, 0.3, 1); /* sorties longues et douces */
+
+  --animate-breath: breath 5s ease-in-out infinite; /* halo de respiration */
+  --animate-breath-slow: breath 7s ease-in-out infinite; /* exercices guidés */
+  --animate-fade-in: fade-in 0.35s ease-out both;
+  --animate-rise: rise 0.45s var(--ease-calm) both; /* apparition des cartes */
+
+  @keyframes breath {
+    0%,
+    100% {
+      transform: scale(1);
+      opacity: 0.45;
+    }
+    50% {
+      transform: scale(1.18);
+      opacity: 0.8;
+    }
+  }
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+  }
+  @keyframes rise {
+    from {
+      opacity: 0;
+      transform: translateY(8px);
+    }
+  }
+}
+
+/* ══════════ Variantes d'accent ══════════ */
+/* Posées sur <html data-accent="ciel">. Hors @layer, donc prioritaires sur le
+   thème quelle que soit la spécificité. */
+
+[data-accent='ciel'] {
+  --color-accent: #5b8fb8;
+  --color-accent-strong: #3f6e94;
+  --color-accent-soft: #e4eef6;
+  --color-accent-muted: #9cc6d6;
+  --color-ring: #5b8fb8;
+}
+
+[data-accent='lavande'] {
+  --color-accent: #8478b8;
+  --color-accent-strong: #5f5494;
+  --color-accent-soft: #eceaf6;
+  --color-accent-muted: #c3bce0;
+  --color-ring: #8478b8;
+}
+
+/* ══════════ Base ══════════ */
+
+@layer base {
+  html {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-app);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+  }
+
+  /* Titres en sérif : la maquette n'utilise Manrope que pour l'interface et les chiffres. */
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    font-weight: 400;
+    color: var(--color-fg);
+  }
+
+  ::placeholder {
+    color: var(--color-placeholder);
+  }
+
+  ::selection {
+    background-color: var(--color-accent-soft);
+    color: var(--color-accent-strong);
+  }
+
+  /* Focus visible partout : accessibilité, et aucun composant tiers ne le fournit. */
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+
+  /* Le halo de respiration est permanent à l'écran — il doit pouvoir se taire. */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
