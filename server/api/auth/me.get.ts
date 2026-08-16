@@ -7,9 +7,7 @@
  * (CU-05.2). Sans cette relecture, un compte supprimé resterait connecté.
  */
 export default defineEventHandler(async (event) => {
-  const { user: sessionUser, loggedInAt } = await requireUserSession(event, {
-    message: 'Authentification requise.',
-  })
+  const { user: sessionUser, loggedInAt } = await requireAuth(event)
 
   const user = await prisma.user.findUnique({
     where: { id: sessionUser.id },
