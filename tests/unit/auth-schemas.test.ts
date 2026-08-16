@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { z } from 'zod'
-import { emailDomain, registerSchema, resendVerificationSchema } from '../../server/utils/auth-schemas'
+import { emailDomain, loginSchema, registerSchema, resendVerificationSchema } from '../../server/utils/auth-schemas'
 
 const valid = {
   email: 'alice.martin@zentime.demo',
@@ -69,6 +69,28 @@ describe('registerSchema', () => {
 
   it('refuse un corps de requête vide', () => {
     expect(registerSchema.safeParse(undefined).success).toBe(false)
+  })
+})
+
+describe('loginSchema', () => {
+  it('accepte des identifiants complets et normalise l\'adresse', () => {
+    const result = loginSchema.safeParse({ email: ' Alice@ZenTime.Demo ', password: 'ZenTime2026!' })
+
+    expect(result.success).toBe(true)
+    expect(result.data?.email).toBe('alice@zentime.demo')
+  })
+
+  // Un mot de passe créé avant un durcissement des règles doit rester saisissable :
+  // c'est la vérification du condensat qui tranche, pas le schéma.
+  it('n\'impose aucune règle de robustesse à la saisie', () => {
+    expect(loginSchema.safeParse({ email: 'alice@zentime.demo', password: 'court' }).success).toBe(true)
+  })
+
+  it('refuse un mot de passe vide', () => {
+    const result = loginSchema.safeParse({ email: 'alice@zentime.demo', password: '' })
+
+    expect(result.success).toBe(false)
+    expect(z.flattenError(result.error!).fieldErrors.password).toContain('Mot de passe requis.')
   })
 })
 
