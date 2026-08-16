@@ -4,6 +4,10 @@ export default defineNuxtConfig({
   devtools: { enabled: true },
   modules: ['@nuxt/eslint', 'nuxt-auth-utils', '@nuxtjs/seo'],
 
+  // @nuxtjs/seo compose les titres avec « %s | %siteName » : sans nom de site,
+  // le jeton reste affiché tel quel dans l'onglet du navigateur.
+  site: { name: 'ZenTime' },
+
   // Valeurs par défaut = configuration de développement (Mailpit via docker compose).
   // Chaque clé est surchargeable en production par la variable d'environnement
   // correspondante : mail.host ← NUXT_MAIL_HOST, public.siteUrl ← NUXT_PUBLIC_SITE_URL.
