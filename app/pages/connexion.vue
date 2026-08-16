@@ -87,7 +87,7 @@ async function resend() {
           autocomplete="email"
           required
           :aria-invalid="Boolean(errors.email)"
-          aria-describedby="email-error"
+          :aria-describedby="errors.email ? 'email-error' : undefined"
         >
         <span
           v-if="errors.email"
