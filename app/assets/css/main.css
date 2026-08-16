@@ -1,5 +1,3 @@
-/* Polices de la maquette : Manrope (interface & données), Newsreader (titres & accueil). */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap');
 @import 'tailwindcss';
 
 /* `static` force l'émission de toutes les variables, même celles qu'aucune classe
@@ -8,6 +6,10 @@
 @theme static {
   /* ══════════ Typographie ══════════ */
 
+  /* Manrope pour l'interface et les données, Newsreader pour les titres et
+     l'accueil. Les deux sont auto-hébergées : @nuxt/fonts lit les variables
+     préfixées `--font-` et génère les @font-face servies depuis /_fonts.
+     Les graisses chargées sont déclarées dans nuxt.config.ts. */
   --font-sans: 'Manrope', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-serif: 'Newsreader', ui-serif, Georgia, serif;
   /* Alias de lecture : les titres et messages d'accueil passent en sérif. */
