@@ -12,15 +12,15 @@ function siteUrl(event: H3Event) {
 }
 
 /**
- * Lien porté par le courriel de confirmation.
+ * Lien porté par le courriel de confirmation. Il mène à l'écran, qui consomme le
+ * jeton par un POST.
  *
- * Provisoire : tant que l'écran `/confirmer-email` n'existe pas, le lien pointe
- * directement sur l'API. Cet écran devra faire un POST, qu'un antivirus de
- * messagerie ne déclenche pas — alors qu'il suit volontiers un lien en GET, ce
- * qui consommerait le jeton avant même que le destinataire ait ouvert le message.
+ * Viser l'API directement en GET reviendrait à laisser un antivirus de messagerie
+ * activer le compte en prélisant le lien, avant même que le destinataire ait
+ * ouvert le message.
  */
 function confirmationUrl(event: H3Event, token: string) {
-  return `${siteUrl(event)}/api/auth/verify-email?token=${encodeURIComponent(token)}`
+  return `${siteUrl(event)}/confirmer-email?token=${encodeURIComponent(token)}`
 }
 
 export function loginUrl(event: H3Event) {
