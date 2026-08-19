@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { Role } from '../../lib/generated/prisma/enums.js'
+import { roleLabels } from '../utils/roles'
 
 /**
  * Coquille des espaces connectés : barre latérale sur desktop, barre d'onglets
