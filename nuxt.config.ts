@@ -1,8 +1,26 @@
+import tailwindcss from '@tailwindcss/vite'
+
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  modules: ['@nuxt/eslint', 'nuxt-auth-utils', '@nuxtjs/seo'],
+  css: ['@/assets/css/main.css'],
+  modules: ['@nuxt/eslint', '@nuxt/fonts', 'nuxt-auth-utils', '@nuxtjs/seo'],
+  vite: {
+    plugins: [tailwindcss()],
+  },
+
+  // Polices auto-hébergées : @nuxt/fonts détecte Manrope et Newsreader dans les
+  // variables `--font-*` du thème Tailwind, télécharge les fichiers au build et
+  // les sert depuis /_fonts — aucun appel à fonts.googleapis.com au runtime.
+  // Les graisses doivent être listées : le module ne résout que la 400 par
+  // défaut, les autres seraient simulées par le navigateur.
+  fonts: {
+    families: [
+      { name: 'Manrope', provider: 'google', weights: [400, 500, 600, 700, 800], styles: ['normal'] },
+      { name: 'Newsreader', provider: 'google', weights: [400, 500], styles: ['normal', 'italic'] },
+    ],
+  },
 
   // @nuxtjs/seo compose les titres avec « %s | %siteName » : sans nom de site,
   // le jeton reste affiché tel quel dans l'onglet du navigateur.

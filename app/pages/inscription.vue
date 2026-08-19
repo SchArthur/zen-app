@@ -1,6 +1,8 @@
 <script setup lang="ts">
 // CU-02 — Créer un compte. Premier temps du double opt-in : le formulaire ne
 // connecte personne, il déclenche l'envoi d'un lien de confirmation.
+definePageMeta({ layout: 'auth' })
+
 useSeoMeta({ title: 'Créer un compte' })
 
 const form = reactive({
@@ -42,146 +44,144 @@ async function submit() {
 </script>
 
 <template>
-  <main>
-    <h1>Créer un compte</h1>
-
+  <div>
     <!-- Le formulaire disparaît une fois la demande acceptée : le seul geste
          utile est alors d'aller relever sa boîte de réception. -->
     <div v-if="sent">
-      <p role="status">
+      <h1 class="font-display text-[1.75rem]/[1.1] text-fg">
+        Vérifiez votre boîte mail
+      </h1>
+
+      <AppAlert
+        role="status"
+        tone="success"
+        class="mt-5"
+      >
         {{ message }}
-      </p>
-      <p>
+      </AppAlert>
+
+      <p class="mt-6 text-center text-label text-fg-subtle">
         Vous n'avez rien reçu ?
-        <NuxtLink to="/confirmer-email">
+        <NuxtLink
+          to="/confirmer-email"
+          class="font-bold text-accent-strong underline-offset-2 hover:underline"
+        >
           Demander un nouveau lien
         </NuxtLink>
       </p>
     </div>
 
-    <form
-      v-else
-      novalidate
-      @submit.prevent="submit"
-    >
-      <p
-        v-if="message"
-        role="alert"
+    <div v-else>
+      <h1 class="font-display text-[1.75rem]/[1.1] text-fg">
+        Créer un compte
+      </h1>
+      <p class="mt-1.5 text-label/[1.45] font-medium text-mist-600">
+        Quelques minutes par jour pour souffler, sans quitter votre poste.
+      </p>
+
+      <form
+        novalidate
+        class="mt-6 flex flex-col gap-4"
+        @submit.prevent="submit"
       >
-        {{ message }}
-      </p>
-
-      <p>
-        <label for="firstName">Prénom</label>
-        <input
-          id="firstName"
-          v-model="form.firstName"
-          type="text"
-          autocomplete="given-name"
-          required
-          :aria-invalid="Boolean(errors.firstName)"
-          :aria-describedby="errors.firstName ? 'firstName-error' : undefined"
+        <AppAlert
+          v-if="message"
+          role="alert"
+          tone="danger"
         >
-        <span
-          v-if="errors.firstName"
-          id="firstName-error"
-        >{{ errors.firstName.join(' ') }}</span>
-      </p>
+          {{ message }}
+        </AppAlert>
 
-      <p>
-        <label for="lastName">Nom</label>
-        <input
-          id="lastName"
-          v-model="form.lastName"
-          type="text"
-          autocomplete="family-name"
-          required
-          :aria-invalid="Boolean(errors.lastName)"
-          aria-describedby="lastName-error"
-        >
-        <span
-          v-if="errors.lastName"
-          id="lastName-error"
-        >{{ errors.lastName.join(' ') }}</span>
-      </p>
+        <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+          <AppField
+            id="firstName"
+            v-model="form.firstName"
+            label="Prénom"
+            type="text"
+            autocomplete="given-name"
+            required
+            :errors="errors.firstName"
+          />
 
-      <p>
-        <label for="email">Adresse email professionnelle</label>
-        <input
+          <AppField
+            id="lastName"
+            v-model="form.lastName"
+            label="Nom"
+            type="text"
+            autocomplete="family-name"
+            required
+            :errors="errors.lastName"
+          />
+        </div>
+
+        <AppField
           id="email"
           v-model="form.email"
+          label="Adresse email professionnelle"
           type="email"
           autocomplete="email"
           required
-          :aria-invalid="Boolean(errors.email)"
-          aria-describedby="email-hint email-error"
-        >
-        <span id="email-hint">Elle doit relever du domaine de votre entreprise.</span>
-        <span
-          v-if="errors.email"
-          id="email-error"
-        >{{ errors.email.join(' ') }}</span>
-      </p>
+          hint="Elle doit relever du domaine de votre entreprise."
+          :errors="errors.email"
+        />
 
-      <p>
-        <label for="password">Mot de passe</label>
-        <input
+        <!-- Le serveur renvoie un message par critère manquant (CU-02, E2) :
+             AppField les liste, il ne les résume pas. -->
+        <AppField
           id="password"
           v-model="form.password"
+          label="Mot de passe"
           type="password"
           autocomplete="new-password"
           required
-          :aria-invalid="Boolean(errors.password)"
-          aria-describedby="password-hint password-error"
+          hint="12 caractères minimum, dont une minuscule, une majuscule et un chiffre."
+          :errors="errors.password"
+        />
+
+        <div>
+          <div class="flex items-start gap-2.5">
+            <input
+              id="acceptTerms"
+              v-model="form.acceptTerms"
+              type="checkbox"
+              class="mt-0.5 size-4.5 shrink-0 accent-accent"
+              :aria-invalid="Boolean(errors.acceptTerms)"
+              :aria-describedby="errors.acceptTerms ? 'acceptTerms-error' : undefined"
+            >
+            <label
+              for="acceptTerms"
+              class="text-caption/[1.5] text-fg-muted"
+            >
+              J'accepte les conditions d'utilisation et la politique de confidentialité.
+            </label>
+          </div>
+          <p
+            v-if="errors.acceptTerms"
+            id="acceptTerms-error"
+            class="mt-1.5 text-caption/[1.45] font-semibold text-danger-strong"
+          >
+            {{ errors.acceptTerms.join(' ') }}
+          </p>
+        </div>
+
+        <button
+          type="submit"
+          :disabled="pending"
+          class="mt-1 w-full rounded-lg bg-accent px-4 py-3.5 text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
         >
-        <span id="password-hint">
-          12 caractères minimum, dont une minuscule, une majuscule et un chiffre.
-        </span>
-        <!-- Le serveur renvoie un message par critère manquant (CU-02, E2) :
-             ils sont listés, pas résumés en « mot de passe invalide ». -->
-        <span
-          v-if="errors.password"
-          id="password-error"
+          {{ pending ? 'Envoi en cours…' : 'Créer mon compte' }}
+        </button>
+      </form>
+
+      <p class="mt-6 text-center text-label text-fg-subtle">
+        Vous avez déjà un compte ?
+        <NuxtLink
+          to="/connexion"
+          class="font-bold text-accent-strong underline-offset-2 hover:underline"
         >
-          <ul>
-            <li
-              v-for="reason in errors.password"
-              :key="reason"
-            >{{ reason }}</li>
-          </ul>
-        </span>
+          Se connecter
+        </NuxtLink>
       </p>
-
-      <p>
-        <input
-          id="acceptTerms"
-          v-model="form.acceptTerms"
-          type="checkbox"
-          :aria-invalid="Boolean(errors.acceptTerms)"
-          aria-describedby="acceptTerms-error"
-        >
-        <label for="acceptTerms">
-          J'accepte les conditions d'utilisation et la politique de confidentialité.
-        </label>
-        <span
-          v-if="errors.acceptTerms"
-          id="acceptTerms-error"
-        >{{ errors.acceptTerms.join(' ') }}</span>
-      </p>
-
-      <button
-        type="submit"
-        :disabled="pending"
-      >
-        {{ pending ? 'Envoi en cours…' : 'Créer mon compte' }}
-      </button>
-    </form>
-
-    <p>
-      Vous avez déjà un compte ?
-      <NuxtLink to="/connexion">
-        Se connecter
-      </NuxtLink>
-    </p>
-  </main>
+    </div>
+  </div>
 </template>
