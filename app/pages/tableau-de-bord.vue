@@ -170,12 +170,14 @@ const weekSummary = computed(() =>
           />
         </div>
 
-        <button
-          type="button"
-          class="mt-auto rounded-lg bg-accent px-4 py-3.5 text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong"
+        <!-- « Démarrer une pause en une interaction depuis n'importe quel écran »
+             (CU-07) : le minuteur vit sur /pauses, le tableau de bord y mène. -->
+        <NuxtLink
+          to="/pauses"
+          class="mt-auto rounded-lg bg-accent px-4 py-3.5 text-center text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong"
         >
           Prendre une pause maintenant
-        </button>
+        </NuxtLink>
       </section>
 
       <!-- Raccourcis — mobile seulement, la barre latérale les remplace ailleurs -->
