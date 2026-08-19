@@ -20,7 +20,10 @@ export const emailSchema = z
   .max(180, 'Adresse email trop longue.')
   .pipe(z.email('Adresse email invalide.'))
 
-const nameSchema = (label: string) =>
+// Exporté : la modification du profil (CU-06) porte sur les mêmes champs et doit
+// appliquer les mêmes règles. Deux définitions finiraient par diverger, et un
+// prénom accepté à l'inscription serait refusé à la première correction.
+export const nameSchema = (label: string) =>
   z
     .string(`${label} requis.`)
     .trim()
