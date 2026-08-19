@@ -9,7 +9,17 @@ useSeoMeta({ title: 'Mon profil' })
 
 const { fetch: refreshSession } = useUserSession()
 
-const { data } = await useFetch('/api/profile')
+const { data, error } = await useFetch('/api/profile')
+
+if (error.value) {
+  const apiError = toApiError(error.value)
+  throw createError({
+    statusCode: (error.value as { statusCode?: number }).statusCode ?? 502,
+    statusMessage: apiError.message,
+    data: { code: apiError.code },
+  })
+}
+
 const loaded = data.value
 
 // Le middleware `auth` a déjà exigé une session : ne rien recevoir ici est une
