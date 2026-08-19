@@ -128,7 +128,14 @@ async function logout() {
       </nav>
 
       <div class="mt-auto">
-        <div class="flex items-center gap-2.75 rounded-xl bg-surface-soft p-3.5">
+        <!-- Le bloc d'identité mène au profil (CU-06). Il n'a pas sa place dans
+             la liste des onglets : on n'y va pas travailler, on y va se régler. -->
+        <NuxtLink
+          to="/profil"
+          :aria-current="isActive('/profil') ? 'page' : undefined"
+          class="flex items-center gap-2.75 rounded-xl p-3.5 transition-colors"
+          :class="isActive('/profil') ? 'bg-accent-soft' : 'bg-surface-soft hover:bg-mist-200'"
+        >
           <span
             aria-hidden="true"
             class="size-9.5 shrink-0 rounded-full bg-linear-135"
@@ -140,7 +147,7 @@ async function logout() {
             </span>
             <span class="block text-caption font-medium text-fg-faint">{{ roleLabel }}</span>
           </span>
-        </div>
+        </NuxtLink>
 
         <!-- Absent de la maquette, mais il faut bien pouvoir sortir. Discret
              jusqu'au survol : ce n'est pas l'action que l'on vient chercher. -->
@@ -168,9 +175,11 @@ async function logout() {
           >
             {{ pending ? 'Déconnexion…' : 'Se déconnecter' }}
           </button>
-          <span
-            aria-hidden="true"
-            class="size-10.5 shrink-0 rounded-full bg-linear-135"
+          <NuxtLink
+            to="/profil"
+            aria-label="Mon profil"
+            :aria-current="isActive('/profil') ? 'page' : undefined"
+            class="block size-10.5 shrink-0 rounded-full bg-linear-135"
             :class="avatarGradient"
           />
         </div>
