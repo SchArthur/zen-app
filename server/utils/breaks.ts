@@ -1,3 +1,5 @@
+import { APP_TIME_ZONE } from '../../shared/utils/time'
+
 /**
  * CU-07 — Suivre une pause.
  *
@@ -17,17 +19,6 @@
  * de la personne comme celles de son équipe.
  */
 export const MAX_BREAK_DURATION_SEC = 2 * 60 * 60
-
-/**
- * Fuseau de référence pour découper l'historique en journées.
- *
- * Fixé et non déduit de l'horloge : le serveur et le navigateur doivent tomber
- * d'accord sur ce qu'est « aujourd'hui », sinon la même pause change de jour
- * entre le rendu serveur et l'hydratation. L'application s'adresse à des
- * entreprises françaises (voir `infrastructure.md`), la journée de travail est
- * donc celle de Paris.
- */
-export const BREAK_TIME_ZONE = 'Europe/Paris'
 
 interface BreakRow {
   id: string
@@ -64,7 +55,7 @@ export function breakDurationSec(startedAt: Date, endedAt: Date) {
 // clé est assemblée explicitement, elle ne dépend pas des données de locale
 // embarquées par la plateforme.
 const dayFormatter = new Intl.DateTimeFormat('fr-FR', {
-  timeZone: BREAK_TIME_ZONE,
+  timeZone: APP_TIME_ZONE,
   year: 'numeric',
   month: '2-digit',
   day: '2-digit',
