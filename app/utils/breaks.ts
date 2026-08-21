@@ -18,6 +18,7 @@ const timeFormatter = new Intl.DateTimeFormat('fr-FR', {
 })
 
 const dayFormatter = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: APP_TIME_ZONE,
   weekday: 'long',
   day: 'numeric',
   month: 'long',
