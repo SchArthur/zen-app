@@ -195,8 +195,8 @@ const stressTrend = computed(() => formatTrend(trends.value.stress, { decimals: 
           <span class="text-xl text-fg-faint">/ 5</span>
         </p>
         <p class="mt-1 text-label/[1.4] font-medium text-fg-faint">
-          sur {{ totals.declaredDays }} journée{{ totals.declaredDays > 1 ? 's' : '' }}
-          déclarée{{ totals.declaredDays > 1 ? 's' : '' }}
+          sur {{ totals.declaredDays }} journée{{ totals.declaredDays === 1 ? '' : 's' }}
+          déclarée{{ totals.declaredDays === 1 ? '' : 's' }}
         </p>
         <p
           class="mt-2.5 text-caption font-bold"
@@ -271,7 +271,7 @@ const stressTrend = computed(() => formatTrend(trends.value.stress, { decimals: 
           v-if="hasDeclarations && totals.declaredDays < days"
           class="mt-3.5 text-caption/[1.5] text-fg-muted"
         >
-          {{ days - totals.declaredDays }} journée{{ days - totals.declaredDays > 1 ? 's' : '' }}
+          {{ days - totals.declaredDays }} journée{{ days - totals.declaredDays === 1 ? '' : 's' }}
           sans déclaration sur la période — week-ends et congés compris. Les moyennes
           ci-dessus ne les comptent pas.
         </p>
