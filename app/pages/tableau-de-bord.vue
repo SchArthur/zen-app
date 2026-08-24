@@ -299,12 +299,25 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
           />
         </div>
 
+        <!-- Une pause en cours n'a pas à être redémarrée : le bouton devient un
+             lien vers le minuteur, qui est l'endroit où on l'arrête. Sinon
+             c'est le même déclencheur qu'en barre latérale — un bouton qui
+             annonce « prendre une pause maintenant » doit la prendre, pas
+             conduire à l'écran où on la prendra. -->
         <NuxtLink
+          v-if="running"
           to="/pauses"
           class="mt-auto rounded-lg bg-accent px-4 py-3.5 text-center text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong"
         >
-          {{ running ? 'Voir le minuteur' : 'Prendre une pause maintenant' }}
+          Voir le minuteur
         </NuxtLink>
+
+        <AppBreakAction
+          v-else
+          label="Prendre une pause maintenant"
+          root-class="mt-auto"
+          class="w-full rounded-lg bg-accent px-4 py-3.5 text-center text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
+        />
       </section>
 
       <!-- Raccourcis — mobile seulement -->

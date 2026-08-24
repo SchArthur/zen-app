@@ -89,6 +89,17 @@ function isActive(to: string) {
   return route.path === to || route.path.startsWith(`${to}/`)
 }
 
+/**
+ * Le raccourci « prendre une pause » disparaît sur l'écran du minuteur, et là
+ * seulement.
+ *
+ * C'est le seul écran qui porte déjà le contrôle, en grand et avec l'état réel
+ * de la pause. Deux boutons pour la même action, dont un qui ignore qu'une
+ * pause est en cours, se contrediraient à l'usage. `/pauses/historique`, lui,
+ * garde le raccourci : il n'a pas de minuteur.
+ */
+const showBreakShortcut = computed(() => route.path !== '/pauses')
+
 const pending = ref(false)
 
 async function logout() {
@@ -147,6 +158,14 @@ async function logout() {
       </nav>
 
       <div class="mt-auto">
+        <!-- CU-07, point 1 : démarrer une pause depuis n'importe quel écran, en
+             une interaction. Posé dans la coquille et non dans les pages, c'est
+             le seul endroit d'où « n'importe quel écran » est vrai. -->
+        <AppBreakAction
+          v-if="showBreakShortcut"
+          class="mb-4 w-full rounded-lg bg-accent px-4 py-3 text-label/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
+        />
+
         <!-- Le bloc d'identité mène au profil (CU-06). Il n'a pas sa place dans
              la liste des onglets : on n'y va pas travailler, on y va se régler. -->
         <NuxtLink
@@ -185,11 +204,19 @@ async function logout() {
       <!-- Barre du haut — mobile -->
       <header class="flex items-center justify-between px-5 py-3.5 lg:hidden">
         <AppLogo />
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
+          <!-- Même raccourci qu'en barre latérale : sans lui, « n'importe quel
+               écran » ne serait vrai que sur grand écran. Libellé raccourci,
+               c'est la seule place disponible en 375 px. -->
+          <AppBreakAction
+            v-if="showBreakShortcut"
+            label="Pause"
+            class="rounded-lg bg-accent px-3 py-1.5 text-caption font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
+          />
           <button
             type="button"
             :disabled="pending"
-            class="rounded-lg px-2.5 py-1.5 text-caption font-semibold text-fg-faint transition-colors hover:bg-surface hover:text-fg-muted disabled:opacity-60"
+            class="rounded-lg px-2 py-1.5 text-caption font-semibold text-fg-faint transition-colors hover:bg-surface hover:text-fg-muted disabled:opacity-60"
             @click="logout"
           >
             {{ pending ? 'Déconnexion…' : 'Se déconnecter' }}
