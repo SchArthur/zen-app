@@ -1,10 +1,19 @@
 <script setup lang="ts">
 /**
- * Jauge circulaire de l'indice de bien-être.
+ * Anneau de progression : une valeur rapportée à un objectif.
  *
- * Le même anneau sert aux trois rôles, à des tailles différentes : indice
- * personnel, moyenne d'équipe, indice global. Le contenu du centre est laissé
- * à l'appelant, qui n'affiche pas toujours le total.
+ * Il portait un « indice de bien-être sur 100 » dans la maquette. F7 l'interdit
+ * — « aucun score global de bien-être, aucune comparaison avec d'autres
+ * utilisateurs » — pour une raison qui tient en une phrase de son critère R : ne
+ * pas transformer le bien-être en performance. Un score agrège des ressentis
+ * déclarés en une note, et une note se compare.
+ *
+ * L'anneau mesure donc désormais une progression vers un objectif que
+ * l'utilisateur s'est lui-même donné, ce qui n'est pas la même chose : le
+ * dénominateur vient de ses propres réglages, et il n'a de sens que pour lui.
+ *
+ * Le contenu du centre est laissé à l'appelant, qui n'affiche pas toujours le
+ * total.
  */
 const props = withDefaults(defineProps<{
   /** Valeur à représenter, dans l'unité de `max`. */
