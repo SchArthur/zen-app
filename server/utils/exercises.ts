@@ -21,20 +21,31 @@ import type { ExercisesQuery } from './exercise-schemas'
 export const ACTIVITY_WINDOW_DAYS = 28
 
 /**
- * Champs d'un exercice exposés hors du serveur.
+ * De quoi présenter un exercice sans le dérouler : ce qu'affiche une carte, et
+ * exactement ce dont le moteur de recommandation a besoin pour choisir.
  *
  * `isActive` n'en fait pas partie : un exercice retiré du catalogue n'est jamais
- * renvoyé, l'interface n'a donc rien à filtrer ni à afficher. Projection unique,
- * comme `preferenceSelect`, pour qu'aucune route n'en laisse filtrer davantage.
+ * renvoyé, l'interface n'a donc rien à filtrer ni à afficher.
  */
-export const exerciseSelect = {
+export const exerciseCardSelect = {
   id: true,
   slug: true,
   title: true,
   description: true,
-  steps: true,
   type: true,
   durationMin: true,
+} as const
+
+/**
+ * Champs d'un exercice exposés hors du serveur, déroulé compris.
+ *
+ * Projection unique, comme `preferenceSelect`, pour qu'aucune route n'en laisse
+ * filtrer davantage. Le déroulé n'est chargé que là où il est affiché : la carte
+ * du catalogue n'en a pas l'usage, et il pèse plus que tout le reste réuni.
+ */
+export const exerciseSelect = {
+  ...exerciseCardSelect,
+  steps: true,
 } as const
 
 interface LogRow {
@@ -143,6 +154,21 @@ export async function readExercise(slug: string | undefined) {
   return await prisma.exercise.findFirst({
     where: { slug: parsed.data, isActive: true },
     select: exerciseSelect,
+  })
+}
+
+/**
+ * Catalogue publié en entier, sans les déroulés.
+ *
+ * Le moteur de recommandation choisit parmi tous les exercices actifs : les
+ * filtres de famille et de durée qu'il applique lui sont propres et viennent du
+ * profil, pas d'une requête d'interface.
+ */
+export function readRecommendableExercises() {
+  return prisma.exercise.findMany({
+    where: { isActive: true },
+    orderBy: [{ durationMin: 'asc' }, { title: 'asc' }],
+    select: exerciseCardSelect,
   })
 }
 
