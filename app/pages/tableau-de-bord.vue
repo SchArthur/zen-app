@@ -60,11 +60,16 @@ const moodLevels = [
   { level: 5, label: 'Excellent', dot: 'bg-mood-5', halo: 'ring-accent-soft' },
 ]
 
-/** Raccourcis affichés sur mobile, là où la barre latérale n'existe pas. */
+/**
+ * Raccourcis affichés sur mobile, là où la barre latérale n'existe pas.
+ *
+ * Les trois mènent au catalogue, déjà filtré sur une famille : le filtre vit
+ * dans l'URL (CU-08), il n'y a donc pas trois écrans à écrire pour trois entrées.
+ */
 const quickActions = [
-  { label: 'Respirer', to: '/serenite', tone: 'bg-accent-soft' },
-  { label: 'Bouger', to: '/activite', tone: 'bg-ciel-100' },
-  { label: 'Méditer', to: '/serenite', tone: 'bg-lavande-100' },
+  { label: 'Respirer', to: '/exercices?type=BREATHING', tone: 'bg-accent-soft' },
+  { label: 'Bouger', to: '/exercices?type=STRETCHING', tone: 'bg-ciel-100' },
+  { label: 'Méditer', to: '/exercices?type=MEDITATION', tone: 'bg-lavande-100' },
 ]
 
 // La barre du jour se détache ; les précédentes s'éclaircissent à mesure que
@@ -97,30 +102,31 @@ const weekSummary = computed(() =>
         </p>
       </div>
 
-      <div class="flex items-center gap-3.5 rounded-2xl bg-surface px-4.5 py-3.5 shadow-soft">
+      <!-- La déclaration se fait sur /humeur (CU-09), qui l'enregistre vraiment.
+           Ce bloc n'en est que le rappel : tant que le tableau de bord est
+           alimenté par des données de démonstration, un sélecteur cliquable ici
+           laisserait croire qu'on a déclaré son humeur alors que rien n'aurait
+           été enregistré. -->
+      <NuxtLink
+        to="/humeur"
+        class="flex items-center gap-3.5 rounded-2xl bg-surface px-4.5 py-3.5 shadow-soft transition-shadow hover:shadow-card"
+      >
         <span class="text-label font-semibold text-fg-subtle">Humeur du jour</span>
-        <div
-          role="radiogroup"
-          aria-label="Humeur du jour"
+        <span
+          aria-hidden="true"
           class="flex items-center gap-2"
         >
-          <button
+          <span
             v-for="mood in moodLevels"
             :key="mood.level"
-            type="button"
-            role="radio"
-            :aria-checked="dashboard.mood.today === mood.level"
-            :aria-label="mood.label"
-            :title="mood.label"
-            class="rounded-full transition-all"
+            class="rounded-full"
             :class="[
               mood.dot,
-              dashboard.mood.today === mood.level ? `size-6.5 ring-3 ${mood.halo}` : 'size-5.5',
+              dashboard.mood.today === mood.level ? `size-6.5 ring-3 ${mood.halo}` : 'size-5.5 opacity-45',
             ]"
-            @click="dashboard.mood.today = mood.level"
           />
-        </div>
-      </div>
+        </span>
+      </NuxtLink>
     </header>
 
     <div class="grid grid-cols-1 gap-5 lg:grid-cols-3">
