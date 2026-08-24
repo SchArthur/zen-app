@@ -1,0 +1,10 @@
+# Les migrations Prisma sont scellées par une empreinte SHA-256 enregistrée en
+# base au moment où elles sont appliquées. Une conversion de fins de ligne au
+# checkout — le comportement par défaut de Git sous Windows — change cette
+# empreinte sans changer une seule instruction SQL, et Prisma exige alors la
+# remise à zéro de la base de développement.
+#
+# Le verrou porte sur tout le SQL du dépôt : ces fichiers ne sont pas ouverts
+# dans le Bloc-notes, ils n'ont aucune raison de basculer en CRLF.
+*.sql text eol=lf
+prisma/migrations/** text eol=lf

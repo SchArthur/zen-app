@@ -28,12 +28,18 @@ interface NavItem {
  * quasi identiques à maintenir en parallèle.
  */
 const navigationByRole: Record<Role, NavItem[]> = {
+  // La maquette nommait ces entrées « Activité » et « Sérénité », et les faisait
+  // pointer vers deux écrans distincts. Le catalogue de F4 est unique et
+  // filtrable : deux écrans auraient affiché la même liste pré-filtrée, sous deux
+  // noms que ni les cas d'utilisation ni le cahier des charges n'emploient. Le
+  // vocabulaire de la maquette survit là où il a du sens — en raccourcis vers le
+  // catalogue déjà filtré (« Respirer », « Bouger », « Méditer »).
   COLLABORATOR: [
     { label: 'Accueil', to: '/tableau-de-bord' },
     { label: 'Pauses', to: '/pauses' },
-    { label: 'Activité', to: '/activite', desktopOnly: true },
-    { label: 'Sérénité', to: '/serenite' },
-    { label: 'Statistiques', to: '/statistiques', short: 'Stats' },
+    { label: 'Exercices', to: '/exercices' },
+    { label: 'Humeur', to: '/humeur' },
+    { label: 'Statistiques', to: '/statistiques', short: 'Stats', desktopOnly: true },
   ],
   MANAGER: [
     { label: 'Tableau d\'équipe', to: '/equipe', short: 'Équipe' },

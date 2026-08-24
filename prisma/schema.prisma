@@ -132,14 +132,19 @@ model BreakSession {
 }
 
 model Exercise {
-  id          String        @id @default(cuid())
-  slug        String        @unique
+  id          String       @id @default(cuid())
+  slug        String       @unique
   title       String
   description String
+  // Déroulé pas à pas exigé par F4. Liste ordonnée plutôt qu'un bloc de texte :
+  // la fiche numérote les étapes, et le contenu reste exploitable ailleurs — une
+  // notification de rappel n'affichera jamais que la première.
+  steps       String[]
   type        ExerciseType
   durationMin Int
-  isActive    Boolean       @default(true)
-  logs        ExerciseLog[]
+  isActive    Boolean      @default(true)
+
+  logs ExerciseLog[]
 
   @@index([type])
 }
@@ -156,12 +161,16 @@ model ExerciseLog {
   @@index([userId, completedAt])
 }
 
+// Deux échelles, et rien d'autre. Le champ libre `note` a été retiré à l'ouverture
+// du lot 4 (écart D2 de `modele-de-donnees.md`, E1 de `normes-et-conformite.md`) :
+// F5 ne le demande pas, et un texte libre posé sur une déclaration de ressenti
+// fait entrer des données d'article 9 dans la table même qu'agrègent les vues
+// d'encadrement — sans qu'aucun traitement ne les ait prévues.
 model MoodCheckIn {
   id        String   @id @default(cuid())
   date      DateTime @db.Date
   mood      Int
   stress    Int
-  note      String?
   createdAt DateTime @default(now())
 
   userId String

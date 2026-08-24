@@ -3,10 +3,8 @@ import {
   MAX_BREAK_DURATION_SEC,
   breakDurationSec,
   dailyBreakGoal,
-  dayKey,
   elapsedSec,
   groupSessionsByDay,
-  historySince,
 } from '../../server/utils/breaks'
 
 /** Une pause terminée, telle que Prisma la renvoie. */
@@ -43,21 +41,6 @@ describe('breakDurationSec', () => {
   it('plafonne une pause oubliée', () => {
     expect(breakDurationSec(new Date('2026-08-19T18:00:00Z'), new Date('2026-08-22T09:00:00Z')))
       .toBe(MAX_BREAK_DURATION_SEC)
-  })
-})
-
-describe('dayKey', () => {
-  it('rattache une pause à sa journée locale, pas à sa journée UTC', () => {
-    // 23 h 30 à Paris, mais déjà 21 h 30 en temps universel : c'est bien le 19.
-    expect(dayKey(new Date('2026-08-19T21:30:00Z'))).toBe('2026-08-19')
-    // 00 h 30 à Paris le lendemain, alors qu'il est encore le 19 en UTC.
-    expect(dayKey(new Date('2026-08-19T22:30:00Z'))).toBe('2026-08-20')
-  })
-
-  it('suit le changement d\'heure', () => {
-    // Décalage d'une heure seulement en hiver : le basculement se fait plus tard.
-    expect(dayKey(new Date('2026-01-15T22:30:00Z'))).toBe('2026-01-15')
-    expect(dayKey(new Date('2026-01-15T23:30:00Z'))).toBe('2026-01-16')
   })
 })
 
@@ -107,14 +90,6 @@ describe('groupSessionsByDay', () => {
     const days = groupSessionsByDay([], 2, new Date('2026-03-01T10:00:00Z'))
 
     expect(days.map(day => day.date)).toEqual(['2026-03-01', '2026-02-28'])
-  })
-})
-
-describe('historySince', () => {
-  it('remonte un jour plus loin que la fenêtre demandée', () => {
-    const since = historySince(7, new Date('2026-08-19T15:00:00Z'))
-
-    expect(since.toISOString()).toBe('2026-08-11T15:00:00.000Z')
   })
 })
 

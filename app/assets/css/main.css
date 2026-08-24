@@ -164,7 +164,18 @@
   --color-mood-5: #5e9576;
   --color-serene: #9cc6d6; /* état « serein », distinct de l'échelle */
 
-  /* Bornes du dégradé de niveau de stress (serein → élevé). */
+  /* Échelle de stress du check-in quotidien (1 = serein → 5 = élevé).
+     Miroir de l'échelle d'humeur : à l'écran, la même couleur veut dire la même
+     chose — le vert, tout va bien ; l'argile, ça pèse. Seul le sens de l'échelle
+     s'inverse, et c'est pour cela que le libellé et la hauteur de la barre
+     accompagnent toujours la couleur (F5). */
+  --color-stress-1: #5e9576;
+  --color-stress-2: #a9cbb6;
+  --color-stress-3: #e6c79a;
+  --color-stress-4: #e0a8a0;
+  --color-stress-5: #c97f76;
+
+  /* Bornes du dégradé de niveau de stress (serein → élevé), pour les graphiques. */
   --color-stress-low: #9dc3a6;
   --color-stress-mid: #e6c79a;
   --color-stress-high: #e0a0a0;

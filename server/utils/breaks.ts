@@ -1,4 +1,7 @@
-import { APP_TIME_ZONE } from '../../shared/utils/time'
+// Le découpage en journées locales n'appartient pas aux pauses : les exercices
+// réalisés et la déclaration d'humeur comptent par la même journée civile. Il
+// vit donc dans `shared/utils/time.ts`, à côté du fuseau de référence.
+import { dayKey, dayKeysBack } from '../../shared/utils/time'
 
 /**
  * CU-07 — Suivre une pause.
@@ -51,49 +54,6 @@ export function breakDurationSec(startedAt: Date, endedAt: Date) {
   return Math.min(elapsedSec(startedAt, endedAt), MAX_BREAK_DURATION_SEC)
 }
 
-// `formatToParts` plutôt qu'une locale qui produirait déjà « AAAA-MM-JJ » : la
-// clé est assemblée explicitement, elle ne dépend pas des données de locale
-// embarquées par la plateforme.
-const dayFormatter = new Intl.DateTimeFormat('fr-FR', {
-  timeZone: APP_TIME_ZONE,
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-})
-
-/** Journée locale d'un instant, au format `AAAA-MM-JJ`. */
-export function dayKey(date: Date) {
-  const parts = new Map(dayFormatter.formatToParts(date).map(part => [part.type, part.value]))
-
-  return `${parts.get('year')}-${parts.get('month')}-${parts.get('day')}`
-}
-
-/**
- * Journée civile précédant `key`.
- *
- * Arithmétique en UTC sur une date sans heure : retirer 24 heures à un instant
- * sauterait ou répéterait un jour lors des changements d'heure.
- */
-function previousDay(key: string) {
-  const [year, month, day] = key.split('-').map(Number)
-  const date = new Date(Date.UTC(year!, month! - 1, day!))
-
-  date.setUTCDate(date.getUTCDate() - 1)
-
-  return date.toISOString().slice(0, 10)
-}
-
-/**
- * Borne basse de la requête d'historique.
- *
- * Un jour de marge : la fenêtre est ensuite découpée en journées locales, dont
- * les bornes ne coïncident pas avec « il y a N × 24 h ». Les pauses en trop sont
- * écartées au regroupement.
- */
-export function historySince(days: number, now: Date) {
-  return new Date(now.getTime() - (days + 1) * 86_400_000)
-}
-
 /**
  * Range les pauses par journée, de la plus récente à la plus ancienne.
  *
@@ -113,23 +73,16 @@ export function groupSessionsByDay(sessions: BreakRow[], days: number, now: Date
     else byDay.set(key, [session])
   }
 
-  const buckets: DayBucket[] = []
-  let key = dayKey(now)
-
-  for (let index = 0; index < days; index++) {
+  return dayKeysBack(days, now).map((key) => {
     const daySessions = byDay.get(key) ?? []
 
-    buckets.push({
+    return {
       date: key,
       count: daySessions.length,
       totalSec: daySessions.reduce((total, session) => total + (session.durationSec ?? 0), 0),
       sessions: daySessions,
-    })
-
-    key = previousDay(key)
-  }
-
-  return buckets
+    }
+  })
 }
 
 /**
