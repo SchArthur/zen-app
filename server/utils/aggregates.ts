@@ -262,10 +262,11 @@ export async function readAggregates(
   const currentLogs = inCurrent(logs, log => dayKey(log.completedAt))
 
   const totals = summariseAggregate(currentBreaks, currentLogs, currentCheckIns)
+  const previousCheckIns = inPrevious(checkIns, checkIn => checkInDay(checkIn.date))
   const before = summariseAggregate(
     inPrevious(breaks, session => dayKey(session.startedAt)),
     inPrevious(logs, log => dayKey(log.completedAt)),
-    inPrevious(checkIns, checkIn => checkInDay(checkIn.date)),
+    countDeclarants(previousCheckIns) >= ANONYMITY_THRESHOLD ? previousCheckIns : [],
   )
 
   return {
