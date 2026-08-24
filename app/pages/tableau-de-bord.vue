@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatDuration } from '../utils/breaks'
+import { plural } from '../utils/text'
 import { exerciseTypeLabels, exerciseTypeTones, formatExerciseDuration } from '../utils/exercises'
 import { formatCheckInDay, formatDayInitial, levelLabel, moodLevels, stressLevels } from '../utils/mood'
 import { APP_TIME_ZONE } from '#shared/utils/time'
@@ -249,7 +250,7 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
           <AppGauge
             :value="breaks.taken"
             :max="breaks.goal"
-            :label="`${breaks.taken} pauses prises sur un objectif de ${breaks.goal}.`"
+            :label="`${breaks.taken} ${plural(breaks.taken, 'pause prise', 'pauses prises')} sur un objectif de ${breaks.goal}.`"
           >
             <span class="text-3xl/none font-extrabold text-fg">{{ breaks.taken }}</span>
             <span class="mt-0.5 text-2xs font-semibold text-fg-faint">/ {{ breaks.goal }}</span>
@@ -283,13 +284,13 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
         </ClientOnly>
 
         <p class="mt-1 text-label/[1.4] font-medium text-fg-faint">
-          {{ breaks.taken }} / {{ breaks.goal }} pauses prises aujourd'hui
+          {{ breaks.taken }} / {{ breaks.goal }} {{ plural(breaks.taken, 'pause prise', 'pauses prises') }} aujourd'hui
         </p>
 
         <div
           class="my-3.5 flex gap-1.5"
           role="img"
-          :aria-label="`${breaks.taken} pauses prises sur ${breaks.goal}.`"
+          :aria-label="`${breaks.taken} ${plural(breaks.taken, 'pause prise', 'pauses prises')} sur ${breaks.goal}.`"
         >
           <span
             v-for="slot in breaks.goal"
