@@ -196,17 +196,44 @@ model Consent {
   @@index([visitorId, type, createdAt])
 }
 
-// Traçabilité RGPD : qui a consulté des données agrégées d'équipe ou d'entreprise.
+/// Traçabilité RGPD : qui a consulté des données agrégées d'équipe ou d'entreprise.
+///
+/// **Le journal survit à son auteur.** C'était l'écart E4 des normes (D4 du
+/// modèle) : la cascade effaçait, avec le compte d'un manager, la trace de
+/// toutes ses consultations — l'exact inverse de l'engagement de F8, « 100 %
+/// des consultations journalisées ». Un journal qu'une suppression de compte
+/// vide n'est pas opposable, donc inutile.
+///
+/// Deux références coexistent donc, et c'est délibéré :
+///
+/// - `actorId` est la clé étrangère vivante, passée à `null` à la suppression
+///   du compte. Elle sert aux lectures courantes, qui veulent un nom.
+/// - `actorRef` est une **copie hors clé étrangère** du même identifiant. Elle
+///   ne s'efface jamais, et cesse de désigner quiconque le jour où le compte
+///   disparaît : deux entrées du même auteur restent corrélables entre elles,
+///   sans que le journal seul permette de remonter à une personne.
+///
+/// Limite assumée, à inscrire à l'AIPD : qui détient par ailleurs une
+/// sauvegarde de la table `User` peut encore rapprocher les deux. Fermer cette
+/// porte demanderait un condensat à clé, donc un secret de plus à gérer et à
+/// faire tourner — arbitrage rendu au lot 6, en faveur de la simplicité.
 model AccessLog {
   id        String   @id @default(cuid())
   action    String
   target    String?
   createdAt DateTime @default(now())
 
-  actorId String
-  actor   User   @relation(fields: [actorId], references: [id], onDelete: Cascade)
+  /// Référence pseudonyme, conservée après la suppression du compte.
+  actorRef String
+  /// Rôle au moment de la consultation : c'est lui qui rend le journal lisible
+  /// une fois l'auteur parti, et le rôle peut avoir changé depuis.
+  actorRole Role
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
 
   @@index([actorId, createdAt])
+  @@index([actorRef, createdAt])
 }
 
 model Subscription {

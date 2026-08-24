@@ -143,11 +143,20 @@ const options = computed(() => ({
   },
 }))
 
-/** Valeur affichée dans le tableau : « — » pour une journée non déclarée. */
+/**
+ * Valeur affichée dans le tableau : « — » pour une journée sans donnée.
+ *
+ * Arrondie à une décimale, comme partout ailleurs dans le produit. Une moyenne
+ * d'équipe brute vaut « 3,888888888888889 » : la précision affichée suggérerait
+ * une exactitude que six déclarations ne portent pas, et le tableau équivalent
+ * doit se lire aussi facilement que le graphique.
+ */
 function cell(value: number | null, unit?: string) {
   if (value === null) return '—'
 
-  return unit ? `${value.toLocaleString('fr-FR')} ${unit}` : value.toLocaleString('fr-FR')
+  const formatted = value.toLocaleString('fr-FR', { maximumFractionDigits: 1 })
+
+  return unit ? `${formatted} ${unit}` : formatted
 }
 </script>
 

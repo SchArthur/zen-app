@@ -27,32 +27,45 @@ interface NavItem {
  * rôle à l'autre : un seul layout, trois menus, plutôt que trois fichiers
  * quasi identiques à maintenir en parallèle.
  */
+/**
+ * Écrans communs aux trois rôles.
+ *
+ * La maquette nommait deux de ces entrées « Activité » et « Sérénité », et les
+ * faisait pointer vers deux écrans distincts. Le catalogue de F4 est unique et
+ * filtrable : deux écrans auraient affiché la même liste pré-filtrée, sous deux
+ * noms que ni les cas d'utilisation ni le cahier des charges n'emploient. Le
+ * vocabulaire de la maquette survit là où il a du sens — en raccourcis vers le
+ * catalogue déjà filtré (« Respirer », « Bouger », « Méditer »).
+ */
+const commonNavigation: NavItem[] = [
+  { label: 'Accueil', to: '/tableau-de-bord' },
+  { label: 'Pauses', to: '/pauses' },
+  { label: 'Exercices', to: '/exercices', desktopOnly: true },
+  { label: 'Humeur', to: '/humeur' },
+  { label: 'Statistiques', to: '/statistiques', short: 'Stats', desktopOnly: true },
+]
+
+/**
+ * La navigation d'encadrement **s'ajoute** à la navigation commune, elle ne la
+ * remplace pas.
+ *
+ * La maquette prévoyait quatre écrans par rôle d'encadrement, et *à la place*
+ * des écrans du collaborateur. C'était deux erreurs en une : la matrice des
+ * accès accorde CU-06 à CU-11 aux trois rôles et précise que « les colonnes
+ * Manager et RH reprennent les droits du Collaborateur », si bien qu'un manager
+ * ne pouvait atteindre ni ses pauses, ni son humeur, ni ses exercices — alors
+ * qu'il y a droit, et que c'est aussi le propos du produit : un manager est un
+ * collaborateur comme les autres.
+ *
+ * Les entrées « Tendances », « Signaux », « Départements », « Impact » et
+ * « Conformité » de la maquette sont notées en évolutions futures : leurs
+ * contenus n'ont pas de cas d'utilisation, et pointaient vers des écrans
+ * inexistants.
+ */
 const navigationByRole: Record<Role, NavItem[]> = {
-  // La maquette nommait ces entrées « Activité » et « Sérénité », et les faisait
-  // pointer vers deux écrans distincts. Le catalogue de F4 est unique et
-  // filtrable : deux écrans auraient affiché la même liste pré-filtrée, sous deux
-  // noms que ni les cas d'utilisation ni le cahier des charges n'emploient. Le
-  // vocabulaire de la maquette survit là où il a du sens — en raccourcis vers le
-  // catalogue déjà filtré (« Respirer », « Bouger », « Méditer »).
-  COLLABORATOR: [
-    { label: 'Accueil', to: '/tableau-de-bord' },
-    { label: 'Pauses', to: '/pauses' },
-    { label: 'Exercices', to: '/exercices' },
-    { label: 'Humeur', to: '/humeur' },
-    { label: 'Statistiques', to: '/statistiques', short: 'Stats', desktopOnly: true },
-  ],
-  MANAGER: [
-    { label: 'Tableau d\'équipe', to: '/equipe', short: 'Équipe' },
-    { label: 'Tendances', to: '/equipe/tendances' },
-    { label: 'Signaux', to: '/equipe/signaux' },
-    { label: 'Rapports', to: '/equipe/rapports' },
-  ],
-  HR: [
-    { label: 'Vue globale', to: '/entreprise', short: 'Global' },
-    { label: 'Départements', to: '/entreprise/departements', short: 'Départ.' },
-    { label: 'Impact', to: '/entreprise/impact' },
-    { label: 'Conformité', to: '/entreprise/conformite', short: 'Conform.' },
-  ],
+  COLLABORATOR: commonNavigation,
+  MANAGER: [...commonNavigation, { label: 'Mon équipe', to: '/equipe', short: 'Équipe' }],
+  HR: [...commonNavigation, { label: 'Entreprise', to: '/entreprise', short: 'Global' }],
 }
 
 /** Dégradés d'avatar de la maquette, une teinte par rôle. */

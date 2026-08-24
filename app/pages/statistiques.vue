@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formatDuration } from '../utils/breaks'
 import { formatCheckInDay, formatDayInitial } from '../utils/mood'
+import { formatTrend } from '../utils/trends'
 
 // CU-11 — Consulter son tableau de bord personnel (F7).
 definePageMeta({ middleware: 'auth', layout: 'dashboard' })
@@ -83,33 +84,6 @@ const hasDeclarations = computed(() => totals.value.declaredDays > 0)
 
 function formatAverage(value: number | null) {
   return value === null ? '—' : value.toLocaleString('fr-FR', { maximumFractionDigits: 1 })
-}
-
-/**
- * Écart avec la période précédente, tel qu'il se lit.
- *
- * `null` signifie « rien à comparer », pas « stable » : on le dit, plutôt que
- * d'afficher un zéro qui se lirait comme une absence de progrès.
- */
-function formatTrend(value: number | null, options: { decimals?: boolean, invert?: boolean } = {}) {
-  if (value === null) return { label: 'pas de point de comparaison', tone: 'text-fg-faint' }
-
-  const rounded = options.decimals
-    ? Math.round(value * 10) / 10
-    : Math.round(value)
-
-  if (rounded === 0) return { label: 'stable', tone: 'text-fg-faint' }
-
-  const formatted = Math.abs(rounded).toLocaleString('fr-FR', { maximumFractionDigits: 1 })
-  const rising = rounded > 0
-  // Sur le stress, monter est la mauvaise direction : la teinte suit le sens,
-  // pas le signe.
-  const good = options.invert ? !rising : rising
-
-  return {
-    label: `${rising ? '+' : '−'} ${formatted} vs période précédente`,
-    tone: good ? 'text-success-strong' : 'text-warning-strong',
-  }
 }
 
 const breaksTrend = computed(() => formatTrend(trends.value.breaks))
