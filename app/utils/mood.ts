@@ -1,4 +1,4 @@
-import { APP_TIME_ZONE } from '../../shared/utils/time'
+import { APP_TIME_ZONE } from '#shared/utils/time'
 
 /**
  * CU-09 — les deux échelles du check-in quotidien.

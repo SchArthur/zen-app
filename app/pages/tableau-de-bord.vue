@@ -2,7 +2,7 @@
 import { formatDuration } from '../utils/breaks'
 import { exerciseTypeLabels, exerciseTypeTones, formatExerciseDuration } from '../utils/exercises'
 import { formatCheckInDay, formatDayInitial, levelLabel, moodLevels, stressLevels } from '../utils/mood'
-import { APP_TIME_ZONE } from '../../shared/utils/time'
+import { APP_TIME_ZONE } from '#shared/utils/time'
 
 // CU-10 — Consulter ses recommandations ; CU-11 — l'état du jour.
 definePageMeta({ middleware: 'auth', layout: 'dashboard' })
