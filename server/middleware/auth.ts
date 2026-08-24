@@ -17,5 +17,10 @@ export default defineEventHandler(async (event) => {
   if (!path.startsWith('/api/')) return
   if (isPublicApiRoute(path)) return
 
-  await requireAuth(event)
+  const { user } = await requireAuth(event)
+
+  // Le cookie survit à la suppression du compte : la session est scellée, pas
+  // vérifiée en base. Le contrôle est fait ici pour que toutes les routes en
+  // héritent — voir `assertAccountExists`.
+  await assertAccountExists(event, user.id)
 })

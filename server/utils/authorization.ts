@@ -55,6 +55,39 @@ export async function requireAuth(event: H3Event): Promise<UserSessionRequired> 
 }
 
 /**
+ * Exige que le compte de la session existe encore.
+ *
+ * Le cookie de session est scellé et autoportant : il reste valide jusqu'à son
+ * échéance, y compris après la suppression du compte (CU-05.2). Sans ce
+ * contrôle, chaque route découvre le problème à sa manière — `/api/profile`
+ * renvoyait proprement 401, tandis que toute route lisant les préférences
+ * échouait en 500, l'`upsert` de `readPreferences` violant la clé étrangère vers
+ * un utilisateur disparu.
+ *
+ * Le contrôle est donc fait **une fois**, dans la barrière globale, plutôt que
+ * répété dans chaque gestionnaire : c'est le même choix que pour
+ * `PUBLIC_API_ROUTES` — une route ajoutée demain en hérite sans que personne
+ * n'ait à y penser.
+ *
+ * Il coûte une lecture par requête authentifiée, sur la clé primaire. C'est
+ * assumé : les routes concernées en font déjà cinq à sept, et une session qui
+ * désigne un compte inexistant n'est pas une session valide.
+ */
+export async function assertAccountExists(event: H3Event, userId: string) {
+  const account = await prisma.user.findUnique({ where: { id: userId }, select: { id: true } })
+
+  if (account) return
+
+  await clearUserSession(event)
+
+  throw createError({
+    statusCode: 401,
+    statusMessage: 'Ce compte n\'existe plus.',
+    data: { code: 'account_gone' },
+  })
+}
+
+/**
  * Exige une session ouverte **et** l'un des rôles indiqués.
  * Équivalent serveur du middleware `role` : `await requireRole(event, 'MANAGER')`.
  */
