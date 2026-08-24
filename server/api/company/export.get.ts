@@ -18,6 +18,8 @@ export default defineEventHandler(async (event) => {
   const scope = await readCompanyScope(user.id)
 
   if (!scope) {
+    await recordAccess(user, ACCESS_ACTIONS.companyExport, accessTarget('company', 'aucune', period))
+
     throw createError({
       statusCode: 403,
       statusMessage: 'Votre compte n\'est rattaché à aucune entreprise.',
