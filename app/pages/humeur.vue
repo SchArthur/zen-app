@@ -96,17 +96,13 @@ async function submit() {
 }
 
 /** Série chronologique complétée : les journées sans déclaration restent vides. */
-const trend = computed(() => {
-  const declared = new Map(history.value.map(entry => [entry.date, entry]))
-
-  return [...declared.keys()].length
-    ? history.value.map(entry => ({
-        ...entry,
-        initial: formatDayInitial(entry.date),
-        label: formatCheckInDay(entry.date),
-      }))
-    : []
-})
+const trend = computed(() =>
+  history.value.map(entry => ({
+    ...entry,
+    initial: formatDayInitial(entry.date),
+    label: formatCheckInDay(entry.date),
+  })),
+)
 
 /**
  * Moyenne des seules journées déclarées.
