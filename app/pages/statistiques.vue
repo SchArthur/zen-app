@@ -162,7 +162,7 @@ const stressTrend = computed(() => formatTrend(trends.value.stress, { decimals: 
         </p>
         <p class="mt-1 text-label/[1.4] font-medium text-fg-faint">
           {{ formatDuration(totals.breakSec) }} au total ·
-          {{ totals.activeDays }} journée{{ totals.activeDays > 1 ? 's' : '' }} sur {{ days }}
+          {{ totals.activeDays }} journée{{ totals.activeDays === 1 ? '' : 's' }} sur {{ days }}
         </p>
         <p
           class="mt-2.5 text-caption font-bold"
