@@ -38,6 +38,28 @@ export function dayKey(date: Date) {
   return `${parts.get('year')}-${parts.get('month')}-${parts.get('day')}`
 }
 
+const clockFormatter = new Intl.DateTimeFormat('fr-FR', {
+  timeZone: APP_TIME_ZONE,
+  hour: '2-digit',
+  minute: '2-digit',
+  hourCycle: 'h23',
+})
+
+/**
+ * Minutes écoulées depuis minuit local, de 0 à 1 439.
+ *
+ * Exprimer l'heure en minutes plutôt qu'en `Date` positionnée évite d'avoir à
+ * fabriquer un instant « 9 h à Paris » côté serveur, ce qui obligerait à
+ * connaître le décalage du jour — deux fois par an, il change. Comparer
+ * `localMinutes(now)` à `workStartHour * 60` répond à la même question sans
+ * jamais construire de date.
+ */
+export function localMinutes(date: Date) {
+  const parts = new Map(clockFormatter.formatToParts(date).map(part => [part.type, part.value]))
+
+  return Number(parts.get('hour')) * 60 + Number(parts.get('minute'))
+}
+
 /**
  * Borne basse d'une requête d'historique portant sur `days` journées.
  *
