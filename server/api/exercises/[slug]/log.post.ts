@@ -27,27 +27,36 @@ export default defineEventHandler(async (event) => {
 
   const now = new Date()
 
-  const latest = await prisma.exerciseLog.findFirst({
-    where: { userId: user.id, exerciseId: exercise.id },
-    orderBy: { completedAt: 'desc' },
-    select: { id: true, completedAt: true },
-  })
-
   // Double clic, retour arrière, second onglet : la même réalisation arrive deux
   // fois. Elle n'est comptée qu'une, et la réponse reste un succès — l'utilisateur
   // n'a rien fait de mal, il n'a aucune raison de voir une erreur.
-  if (isRepeatDeclaration(latest?.completedAt ?? null, exercise.durationMin, now)) {
-    setResponseStatus(event, 200)
+  //
+  // La transaction SERIALIZABLE garantit que le `findFirst` et le `create` sont
+  // atomiques : deux requêtes concurrentes ne peuvent pas toutes deux passer la
+  // vérification et créer deux lignes distinctes.
+  const { log, repeated } = await prisma.$transaction(
+    async (tx) => {
+      const latest = await tx.exerciseLog.findFirst({
+        where: { userId: user.id, exerciseId: exercise.id },
+        orderBy: { completedAt: 'desc' },
+        select: { id: true, completedAt: true },
+      })
 
-    return { log: latest, repeated: true }
-  }
+      if (isRepeatDeclaration(latest?.completedAt ?? null, exercise.durationMin, now)) {
+        return { log: latest!, repeated: true }
+      }
 
-  const log = await prisma.exerciseLog.create({
-    data: { userId: user.id, exerciseId: exercise.id },
-    select: { id: true, completedAt: true },
-  })
+      const created = await tx.exerciseLog.create({
+        data: { userId: user.id, exerciseId: exercise.id },
+        select: { id: true, completedAt: true },
+      })
 
-  setResponseStatus(event, 201)
+      return { log: created, repeated: false }
+    },
+    { isolationLevel: 'Serializable' },
+  )
 
-  return { log, repeated: false }
+  setResponseStatus(event, repeated ? 200 : 201)
+
+  return { log, repeated }
 })
