@@ -256,6 +256,26 @@ const exercises = [
   },
 ]
 
+/**
+ * Familles d'exercices retenues dans un profil : une à trois, jamais zéro.
+ *
+ * Le jeu de démonstration en tirait exactement une par personne, ce qui donnait
+ * un catalogue de recommandation réduit à cinq exercices pour tout le monde — et
+ * plaçait le moteur en repli permanent, puisqu'il ne peut jamais honorer la
+ * famille que sa règle privilégie. Une seule famille est un cas limite légitime,
+ * pas le cas nominal : le formulaire de profil propose des cases à cocher.
+ *
+ * Le repli sur un tirage unique garantit qu'aucun profil ne se retrouve sans
+ * aucune famille, ce que le moteur interpréterait comme « aucune préférence
+ * exprimée » — l'inverse de ce que la personne aurait dit.
+ */
+function favoriteTypes() {
+  const all = Object.values(ExerciseType)
+  const chosen = all.filter(() => chance(0.55))
+
+  return chosen.length ? chosen : [pick(all)]
+}
+
 const roster = [
   { firstName: 'Camille', lastName: 'Perrot', role: Role.HR, team: null },
   { firstName: 'Sofia', lastName: 'Nakamura', role: Role.MANAGER, team: 'Produit' },
@@ -339,7 +359,7 @@ async function main() {
             workEndHour: between(17, 18),
             remindersEnabled: chance(0.8),
             reminderIntervalMin: pick([60, 90, 120]),
-            favoriteTypes: [pick(Object.values(ExerciseType))],
+            favoriteTypes: favoriteTypes(),
           },
         },
         consents: {
@@ -360,17 +380,28 @@ async function main() {
   const moods = []
   const logs = []
 
+  /**
+   * Rien n'est daté après maintenant.
+   *
+   * Les horaires sont tirés entre 9 h et 17 h sur chaque journée retenue, la
+   * dernière étant aujourd'hui : sans ce garde-fou, le jeu de démonstration
+   * contient systématiquement des pauses qui n'ont pas encore eu lieu. Le
+   * symptôme est discret et trompeur — un temps assis négatif au tableau de
+   * bord, des moyennes calculées sur une journée qui n'est pas finie.
+   */
+  const now = new Date()
+  const isPast = (date: Date) => date <= now
+
   for (const user of users) {
     for (const day of days) {
       for (let i = 0; i < between(1, 3); i++) {
         const startedAt = at(day, between(9, 16), between(0, 59))
         const durationSec = between(5, 20) * 60
-        breaks.push({
-          userId: user.id,
-          startedAt,
-          endedAt: new Date(startedAt.getTime() + durationSec * 1000),
-          durationSec,
-        })
+        const endedAt = new Date(startedAt.getTime() + durationSec * 1000)
+
+        if (!isPast(endedAt)) continue
+
+        breaks.push({ userId: user.id, startedAt, endedAt, durationSec })
       }
 
       if (chance(0.8)) {
@@ -383,11 +414,11 @@ async function main() {
       }
 
       if (chance(0.6)) {
-        logs.push({
-          userId: user.id,
-          exerciseId: pick(createdExercises).id,
-          completedAt: at(day, between(9, 17), between(0, 59)),
-        })
+        const completedAt = at(day, between(9, 17), between(0, 59))
+
+        if (isPast(completedAt)) {
+          logs.push({ userId: user.id, exerciseId: pick(createdExercises).id, completedAt })
+        }
       }
     }
   }
