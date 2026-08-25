@@ -26,6 +26,17 @@
       <div class="rounded-3xl bg-surface px-6 py-7 shadow-card sm:px-8">
         <slot />
       </div>
+
+      <!-- Les garanties de confidentialité s'annoncent **avant** l'inscription
+           (F12), pas une fois le compte créé. -->
+      <p class="mt-5 text-center text-caption text-fg-faint">
+        <NuxtLink
+          to="/confidentialite"
+          class="font-semibold underline underline-offset-2 hover:text-fg-muted"
+        >
+          Politique de confidentialité
+        </NuxtLink>
+      </p>
     </div>
   </main>
 </template>
