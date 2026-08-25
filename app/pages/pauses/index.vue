@@ -19,7 +19,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Vos pauses n\'ont pas pu être chargées. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Vos pauses n\'ont pas pu être chargées. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 // Tout est dérivé de `data` plutôt que recopié : après un démarrage ou un arrêt,

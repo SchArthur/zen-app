@@ -62,7 +62,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Votre historique n\'a pas pu être chargé. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Votre historique n\'a pas pu être chargé. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 const goal = computed(() => data.value?.goal ?? 1)

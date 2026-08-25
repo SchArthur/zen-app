@@ -29,7 +29,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Les indicateurs n\'ont pas pu être chargés. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Les indicateurs n\'ont pas pu être chargés. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 const report = computed(() => data.value!)

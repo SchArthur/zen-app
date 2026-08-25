@@ -40,7 +40,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Vos statistiques n\'ont pas pu être chargées. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Vos statistiques n\'ont pas pu être chargées. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 const series = computed(() => data.value?.series ?? [])

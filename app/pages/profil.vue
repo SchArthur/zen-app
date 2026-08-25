@@ -26,7 +26,7 @@ const loaded = data.value
 // panne, pas un cas d'usage. La page d'erreur de Nuxt le dit mieux qu'un
 // formulaire vide, qui inviterait à réenregistrer des valeurs inventées.
 if (!loaded) {
-  throw createError({ statusCode: 502, statusMessage: 'Votre profil n\'a pas pu être chargé. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Votre profil n\'a pas pu être chargé. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 const account = loaded.profile
