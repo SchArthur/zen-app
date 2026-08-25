@@ -15,7 +15,7 @@ WHERE "User"."id" = log."actorId";
 ALTER TABLE "AccessLog"
 ALTER COLUMN "actorRef" SET NOT NULL,
 ALTER COLUMN "actorRole" SET NOT NULL,
-ALTER COLUMN "actorId" DROP NOT NULL
+ALTER COLUMN "actorId" DROP NOT NULL;
 
 -- AlterTable
 ALTER TABLE "Exercise" ALTER COLUMN "steps" DROP DEFAULT;
