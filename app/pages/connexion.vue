@@ -19,6 +19,11 @@ const notVerified = ref(false)
 const resending = ref(false)
 const resendMessage = ref('')
 
+// CU-05.2 — retour de la suppression de compte. Le message est porté par
+// l'adresse et non par un état conservé : la page est atteinte après un
+// changement de session, qui remet tout état applicatif à zéro.
+const accountDeleted = computed(() => route.query.compte === 'supprime')
+
 async function submit() {
   pending.value = true
   message.value = ''
@@ -73,6 +78,15 @@ async function resend() {
     <p class="mt-1.5 text-label/[1.45] font-medium text-mist-600">
       Connectez-vous pour retrouver votre tableau de bord.
     </p>
+
+    <AppAlert
+      v-if="accountDeleted"
+      role="status"
+      tone="success"
+      class="mt-5"
+    >
+      Votre compte et vos déclarations ont été supprimés. Merci d'avoir essayé ZenTime.
+    </AppAlert>
 
     <form
       novalidate

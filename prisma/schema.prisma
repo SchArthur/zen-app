@@ -180,7 +180,33 @@ model MoodCheckIn {
   @@index([userId, date])
 }
 
-// userId null = visiteur non connecté, identifié par visitorId (cookie).
+/// Journal des décisions de consentement — la preuve exigée par l'article 7.1.
+///
+/// Une décision ne se modifie pas : accorder puis retirer écrit deux lignes. La
+/// décision qui fait foi est la plus récente, jamais la première trouvée.
+///
+/// **Le journal survit à son titulaire.** C'était l'écart E3 des normes (D3 du
+/// modèle) : la cascade détruisait, avec le compte, la preuve que le
+/// consentement avait été valablement recueilli — celle-là même qu'il faudrait
+/// produire si le traitement passé était contesté. Le dossier laissait le choix
+/// ouvert entre « trace dissociée » et « suppression assumée » ; la première est
+/// retenue, par la même mécanique que `AccessLog` :
+///
+/// - `userId` est la clé étrangère vivante, passée à `null` à la suppression du
+///   compte ;
+/// - `subjectRef` en est une copie hors clé étrangère, qui ne s'efface jamais et
+///   cesse de désigner quiconque le jour où le compte disparaît.
+///
+/// Ce qui reste après une suppression de compte se lit donc : « le 3 mars,
+/// quelqu'un a consenti à la version v1 ». C'est ce qu'il faut pour prouver, et
+/// pas assez pour identifier — sauf à détenir par ailleurs une sauvegarde de la
+/// table `User`, limite déjà inscrite à l'AIPD pour `AccessLog`.
+///
+/// Reste ouvert, et rattaché à E2 : la durée au terme de laquelle ces lignes
+/// dissociées sont purgées. Aucune durée n'est portée par le schéma aujourd'hui.
+///
+/// `userId` nul **avec** `visitorId` renseigné = décision d'un visiteur non
+/// connecté ; `userId` nul avec `subjectRef` renseigné = titulaire supprimé.
 model Consent {
   id        String      @id @default(cuid())
   type      ConsentType
@@ -188,12 +214,18 @@ model Consent {
   version   String      @default("v1")
   createdAt DateTime    @default(now())
 
+  /// Référence pseudonyme du titulaire, conservée après la suppression du compte.
+  subjectRef String?
+
   userId    String?
-  user      User?   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
   visitorId String?
 
   @@index([userId, type, createdAt])
   @@index([visitorId, type, createdAt])
+  /// Seul chemin d'accès à la preuve une fois le compte effacé : sans lui, la
+  /// produire supposerait de parcourir toute la table.
+  @@index([subjectRef, type, createdAt])
 }
 
 /// Traçabilité RGPD : qui a consulté des données agrégées d'équipe ou d'entreprise.

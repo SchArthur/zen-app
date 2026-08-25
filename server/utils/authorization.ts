@@ -20,6 +20,10 @@ export const PUBLIC_API_ROUTES = [
   '/api/auth/logout',
   '/api/auth/verify-email',
   '/api/auth/resend-verification',
+  // CU-04 — le bandeau de consentement s'adresse d'abord à des visiteurs. La
+  // route ne lit et n'écrit que les décisions de l'appelant, identifié par sa
+  // session ou par son propre cookie de consentement.
+  '/api/consent',
 ] as const
 
 export function isPublicApiRoute(path: string) {

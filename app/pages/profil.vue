@@ -220,6 +220,15 @@ const favoriteTypesDescribedBy = computed(() =>
           entreprise. Le rôle et l'équipe sont attribués par l'entreprise : votre
           responsable RH peut les faire évoluer.
         </p>
+
+        <!-- Deuxième chemin vers CU-04 et CU-05, et le seul sur mobile : la
+             barre d'onglets n'affiche que quatre entrées, et l'avatar mène ici. -->
+        <NuxtLink
+          to="/mes-donnees"
+          class="mt-3 block rounded-xl bg-surface-soft px-4 py-3 text-caption/[1.5] font-semibold text-accent-strong transition-colors hover:bg-mist-200"
+        >
+          Mes consentements, l'export de mes données et la suppression de mon compte →
+        </NuxtLink>
       </section>
 
       <!-- Préférences -->

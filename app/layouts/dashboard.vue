@@ -13,6 +13,17 @@ import { roleLabels } from '../utils/roles'
 const { user, clear } = useUserSession()
 const route = useRoute()
 
+/**
+ * Signale au reste du document qu'une barre d'onglets occupe le bas de l'écran.
+ *
+ * Le bandeau de consentement vit dans `app.vue`, hors de cette coquille : il ne
+ * peut hériter d'aucune variable posée ici, et posé en bas il recouvrirait
+ * intégralement la navigation — mesuré à 169 px de bandeau sur 68 px de barre.
+ * La marque passe donc par le corps du document, que les deux partagent, et
+ * disparaît avec la coquille.
+ */
+useHead({ bodyAttrs: { class: 'has-bottom-bar' } })
+
 interface NavItem {
   label: string
   to: string
@@ -187,12 +198,27 @@ async function logout() {
           </span>
         </NuxtLink>
 
+        <!-- Consentements, export et suppression (CU-04, CU-05). Discret comme
+             la déconnexion : on n'y va pas travailler. Mais atteignable en un
+             clic depuis n'importe quel écran — un droit qui se cherche est un
+             droit qu'on n'exerce pas. -->
+        <NuxtLink
+          to="/mes-donnees"
+          :aria-current="isActive('/mes-donnees') ? 'page' : undefined"
+          class="mt-2 block rounded-lg px-3.5 py-2 text-caption font-semibold transition-colors"
+          :class="isActive('/mes-donnees')
+            ? 'bg-accent-soft text-accent-strong'
+            : 'text-fg-faint hover:bg-surface-soft hover:text-fg-muted'"
+        >
+          Mes données
+        </NuxtLink>
+
         <!-- Absent de la maquette, mais il faut bien pouvoir sortir. Discret
              jusqu'au survol : ce n'est pas l'action que l'on vient chercher. -->
         <button
           type="button"
           :disabled="pending"
-          class="mt-2 w-full rounded-lg px-3.5 py-2 text-caption font-semibold text-fg-faint transition-colors hover:bg-surface-soft hover:text-fg-muted disabled:opacity-60"
+          class="w-full rounded-lg px-3.5 py-2 text-left text-caption font-semibold text-fg-faint transition-colors hover:bg-surface-soft hover:text-fg-muted disabled:opacity-60"
           @click="logout"
         >
           {{ pending ? 'Déconnexion…' : 'Se déconnecter' }}

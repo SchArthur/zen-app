@@ -294,6 +294,25 @@
     background-color: var(--color-app);
     color: var(--color-fg);
     font-family: var(--font-sans);
+
+    /* Hauteur de la barre d'onglets du bas, quand il y en a une.
+       Elle sert à ce qui se pose en bas de l'écran **hors** de la coquille — le
+       bandeau de consentement, qui vit dans `app.vue` et ne peut donc pas hériter
+       d'une variable posée par un layout. La coquille `dashboard` déclare
+       `has-bottom-bar` sur le corps du document, et la valeur retombe à zéro dès
+       que la barre d'onglets disparaît au profit de la barre latérale. */
+    --bottom-bar: 0px;
+  }
+
+  body.has-bottom-bar {
+    /* 3.5rem de contenu + le retrait bas de la barre, marge de sécurité incluse. */
+    --bottom-bar: 4.25rem;
+  }
+
+  @media (width >= 64rem) {
+    body.has-bottom-bar {
+      --bottom-bar: 0px;
+    }
   }
 
   /* Titres en sérif : la maquette n'utilise Manrope que pour l'interface et les chiffres. */

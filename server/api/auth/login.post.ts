@@ -7,8 +7,10 @@ import { randomBytes } from 'node:crypto'
  * rien, conformément à la règle de CU-02 « aucune connexion possible avant
  * confirmation ».
  *
- * TODO (J9) : limitation de débit sur /api/auth/* via nuxt-security. Sans elle,
- * ce point d'entrée autorise le bourrage d'identifiants.
+ * La limitation de débit qui coupe le bourrage d'identifiants n'est pas ici :
+ * elle est posée en une fois sur `/api/auth/**` dans `nuxt.config.ts`. Elle
+ * compte **par adresse IP**, pas par compte — ce que ce seuil ne protège pas est
+ * écrit là-bas, et repris à l'écart 4 de `architecture-logicielle.md` §9.
  */
 export default defineEventHandler(async (event) => {
   const { email, password } = await validateBody(event, loginSchema)

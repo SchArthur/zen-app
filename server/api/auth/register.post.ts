@@ -9,8 +9,9 @@ import { ConsentType } from '../../../lib/generated/prisma/enums.js'
  * identique que l'adresse soit libre, déjà inscrite ou déjà confirmée : sans
  * cela, ce point d'entrée deviendrait un moyen d'énumérer les comptes existants.
  *
- * TODO (J9) : limitation de débit sur /api/auth/* via nuxt-security, sans quoi
- * ce point d'entrée peut servir à inonder une boîte de réception.
+ * La limitation de débit qui protège ce point d'entrée de l'inondation de boîtes
+ * de réception n'est pas ici : elle est posée en une fois sur `/api/auth/**`
+ * dans `nuxt.config.ts`, avec le seuil et ses raisons.
  */
 export default defineEventHandler(async (event) => {
   const { email, password, firstName, lastName } = await validateBody(event, registerSchema)
@@ -46,18 +47,43 @@ export default defineEventHandler(async (event) => {
   })
 
   if (!existing) {
-    const user = await prisma.user.create({
-      data: {
-        email,
-        passwordHash,
-        firstName,
-        lastName,
-        companyId: company.id,
-        // Le rôle reste COLLABORATOR : manager et RH sont attribués par
-        // l'entreprise, jamais choisis par l'inscrit.
-        consents: { create: { type: ConsentType.TERMS, granted: true } },
-      },
-      select: { id: true, email: true, firstName: true },
+    // Le compte et son consentement aux conditions s'écrivent ensemble ou pas du
+    // tout : un compte sans trace d'acceptation serait un compte dont on ne peut
+    // pas prouver qu'il a accepté, et l'acceptation est ce qui a permis sa
+    // création. Deux écritures et non une composition imbriquée, parce que la
+    // seconde a besoin de l'identifiant produit par la première.
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email,
+          passwordHash,
+          firstName,
+          lastName,
+          companyId: company.id,
+          // Le rôle reste COLLABORATOR : manager et RH sont attribués par
+          // l'entreprise, jamais choisis par l'inscrit.
+        },
+        select: { id: true, email: true, firstName: true },
+      })
+
+      await tx.consent.create({
+        data: {
+          type: ConsentType.TERMS,
+          granted: true,
+          // Version écrite explicitement, jamais laissée à la valeur par défaut
+          // du schéma — écart D5 du modèle de données. Sans elle, le jour où les
+          // conditions changent, tous les consentements, anciens comme
+          // nouveaux, se déclareraient « v1 » : la preuve de l'article 7.1
+          // deviendrait inexploitable sans que rien ne le signale.
+          version: CONSENT_POLICY_VERSION,
+          userId: created.id,
+          // Copie hors clé étrangère, qui survit à la suppression du compte.
+          subjectRef: created.id,
+        },
+        select: { id: true },
+      })
+
+      return created
     })
 
     await notify(event, () => issueEmailVerification(event, user))
