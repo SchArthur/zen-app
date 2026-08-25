@@ -109,17 +109,18 @@ function subjectWhere(subject: ConsentSubject) {
 /**
  * Décisions en vigueur, une par finalité.
  *
- * `distinct` sur le type, avec un tri décroissant sur la date : la base ne
- * remonte que la dernière ligne de chaque finalité, en suivant l'index
- * `(userId, type, createdAt)`. Lire tout le journal pour n'en garder que la
- * dernière ligne coûterait de plus en plus cher à chaque décision prise.
+ * `distinct` sur le type, avec un tri d'abord par type puis par date
+ * décroissante : la base remonte la ligne la plus récente de chaque finalité,
+ * en suivant l'index `(userId, type, createdAt)`. Lire tout le journal pour
+ * n'en garder que la dernière ligne coûterait de plus en plus cher à chaque
+ * décision prise.
  */
 export async function readDecisions(subject: ConsentSubject): Promise<Map<ConsentType, ConsentDecision>> {
   if (!subject.userId && !subject.visitorId) return new Map()
 
   const rows = await prisma.consent.findMany({
     where: subjectWhere(subject),
-    orderBy: { createdAt: 'desc' },
+    orderBy: [{ type: 'asc' }, { createdAt: 'desc' }],
     distinct: ['type'],
     select: { type: true, granted: true, version: true, createdAt: true },
   })
@@ -196,6 +197,7 @@ export async function consentState(subject: ConsentSubject, now: Date = new Date
   const analytics = decisions.get(ConsentType.ANALYTICS) ?? null
   const wellbeing = decisions.get(ConsentType.WELLBEING_DATA) ?? null
   const analyticsIsCurrent = analytics ? isDecisionCurrent(analytics, ConsentType.ANALYTICS, now) : false
+  const wellbeingState = subject.userId ? wellbeingConsentState(wellbeing) : null
 
   return {
     policyVersion: CONSENT_POLICY_VERSION,
@@ -203,8 +205,10 @@ export async function consentState(subject: ConsentSubject, now: Date = new Date
     analyticsDecidedAt: analyticsIsCurrent ? analytics!.createdAt.toISOString() : null,
     // Un visiteur n'a pas de données de bien-être : la question ne se pose pas
     // encore pour lui, et `null` la distingue d'une décision à prendre.
-    wellbeing: subject.userId ? wellbeingConsentState(wellbeing) : null,
-    wellbeingDecidedAt: subject.userId && wellbeing ? wellbeing.createdAt.toISOString() : null,
+    wellbeing: wellbeingState,
+    wellbeingDecidedAt: wellbeingState === 'granted' || wellbeingState === 'withdrawn'
+      ? wellbeing!.createdAt.toISOString()
+      : null,
   }
 }
 

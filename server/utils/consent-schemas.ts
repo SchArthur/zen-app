@@ -21,7 +21,7 @@ export const consentDecisionSchema = z
   })
   .refine(
     value => value.analytics !== undefined || value.wellbeing !== undefined,
-    { error: 'Aucune décision transmise.', path: ['analytics'] },
+    { message: 'Aucune décision transmise.', path: ['analytics'] },
   )
 
 export type ConsentDecisionInput = z.infer<typeof consentDecisionSchema>
