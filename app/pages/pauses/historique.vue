@@ -37,7 +37,9 @@ const router = useRouter()
 const windowKey = computed<WindowKey>(() => {
   const value = route.query.fenetre
 
-  return typeof value === 'string' && value in WINDOWS ? value as WindowKey : 'mois'
+  return typeof value === 'string' && Object.hasOwn(WINDOWS, value)
+    ? value as WindowKey
+    : 'mois'
 })
 
 const period = computed(() => WINDOWS[windowKey.value])
