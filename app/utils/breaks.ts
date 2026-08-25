@@ -1,4 +1,4 @@
-import { APP_TIME_ZONE } from '../../shared/utils/time'
+import { APP_TIME_ZONE } from '#shared/utils/time'
 
 /**
  * Mise en forme des durées et des dates de pause.

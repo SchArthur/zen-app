@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { formatClock, formatDuration, formatRelativeDay, formatTime } from '../../utils/breaks'
+import { plural } from '../../utils/text'
 
 // CU-07 — Suivre une pause.
 definePageMeta({ middleware: 'auth', layout: 'dashboard' })
@@ -18,7 +19,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Vos pauses n\'ont pas pu être chargées. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Vos pauses n\'ont pas pu être chargées. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 // Tout est dérivé de `data` plutôt que recopié : après un démarrage ou un arrêt,
@@ -274,14 +275,14 @@ function formatHour(hour: number) {
         </p>
         <p class="mt-1 text-label/[1.4] font-medium text-fg-faint">
           {{ today?.count
-            ? `pauses prises · ${formatDuration(today.totalSec)} au total`
+            ? `${plural(today.count, 'pause prise', 'pauses prises')} · ${formatDuration(today.totalSec)} au total`
             : 'aucune pause pour le moment' }}
         </p>
 
         <div
           class="my-3.5 flex gap-1.5"
           role="img"
-          :aria-label="`${today?.count ?? 0} pauses prises sur un objectif de ${goal}.`"
+          :aria-label="`${today?.count ?? 0} ${plural(today?.count ?? 0, 'pause prise', 'pauses prises')} sur un objectif de ${goal}.`"
         >
           <span
             v-for="slot in goal"

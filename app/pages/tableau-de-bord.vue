@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { formatDuration } from '../utils/breaks'
+import { plural } from '../utils/text'
 import { exerciseTypeLabels, exerciseTypeTones, formatExerciseDuration } from '../utils/exercises'
 import { formatCheckInDay, formatDayInitial, levelLabel, moodLevels, stressLevels } from '../utils/mood'
-import { APP_TIME_ZONE } from '../../shared/utils/time'
+import { APP_TIME_ZONE } from '#shared/utils/time'
 
 // CU-10 — Consulter ses recommandations ; CU-11 — l'état du jour.
 definePageMeta({ middleware: 'auth', layout: 'dashboard' })
@@ -23,7 +24,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Votre tableau de bord n\'a pas pu être chargé. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Votre tableau de bord n\'a pas pu être chargé. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 const breaks = computed(() => data.value!.breaks)
@@ -249,7 +250,7 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
           <AppGauge
             :value="breaks.taken"
             :max="breaks.goal"
-            :label="`${breaks.taken} pauses prises sur un objectif de ${breaks.goal}.`"
+            :label="`${breaks.taken} ${plural(breaks.taken, 'pause prise', 'pauses prises')} sur un objectif de ${breaks.goal}.`"
           >
             <span class="text-3xl/none font-extrabold text-fg">{{ breaks.taken }}</span>
             <span class="mt-0.5 text-2xs font-semibold text-fg-faint">/ {{ breaks.goal }}</span>
@@ -283,13 +284,13 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
         </ClientOnly>
 
         <p class="mt-1 text-label/[1.4] font-medium text-fg-faint">
-          {{ breaks.taken }} / {{ breaks.goal }} pauses prises aujourd'hui
+          {{ breaks.taken }} / {{ breaks.goal }} {{ plural(breaks.taken, 'pause prise', 'pauses prises') }} aujourd'hui
         </p>
 
         <div
           class="my-3.5 flex gap-1.5"
           role="img"
-          :aria-label="`${breaks.taken} pauses prises sur ${breaks.goal}.`"
+          :aria-label="`${breaks.taken} ${plural(breaks.taken, 'pause prise', 'pauses prises')} sur ${breaks.goal}.`"
         >
           <span
             v-for="slot in breaks.goal"
@@ -299,12 +300,25 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
           />
         </div>
 
+        <!-- Une pause en cours n'a pas à être redémarrée : le bouton devient un
+             lien vers le minuteur, qui est l'endroit où on l'arrête. Sinon
+             c'est le même déclencheur qu'en barre latérale — un bouton qui
+             annonce « prendre une pause maintenant » doit la prendre, pas
+             conduire à l'écran où on la prendra. -->
         <NuxtLink
+          v-if="running"
           to="/pauses"
           class="mt-auto rounded-lg bg-accent px-4 py-3.5 text-center text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong"
         >
-          {{ running ? 'Voir le minuteur' : 'Prendre une pause maintenant' }}
+          Voir le minuteur
         </NuxtLink>
+
+        <AppBreakAction
+          v-else
+          label="Prendre une pause maintenant"
+          root-class="mt-auto"
+          class="w-full rounded-lg bg-accent px-4 py-3.5 text-center text-sm/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
+        />
       </section>
 
       <!-- Raccourcis — mobile seulement -->

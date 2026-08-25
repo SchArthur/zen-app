@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { plural } from '../utils/text'
+
 // CU-13 — Consulter les indicateurs de l'entreprise ; CU-14 — les exporter.
 definePageMeta({ middleware: 'auth', layout: 'dashboard' })
 
@@ -27,7 +29,7 @@ if (error.value) {
 }
 
 if (!data.value) {
-  throw createError({ statusCode: 502, statusMessage: 'Les indicateurs n\'ont pas pu être chargés. Réessayez dans un instant.' })
+  throw createError({ statusCode: 502, statusMessage: 'Les indicateurs n\'ont pas pu être chargés. Réessayez dans un instant.', data: { code: 'FETCH_ERROR' } })
 }
 
 const report = computed(() => data.value!)
@@ -98,7 +100,7 @@ async function exportCsv() {
           {{ report.company.name }}
         </h1>
         <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
-          {{ report.headcount }} personnes. Les mêmes garanties que la vue d'équipe
+          {{ report.headcount }} {{ plural(report.headcount, 'personne') }}. Les mêmes garanties que la vue d'équipe
           s'appliquent ici : que des moyennes, aucun nom, aucune déclaration individuelle,
           et le même seuil de {{ report.threshold }} déclarants.
         </p>
