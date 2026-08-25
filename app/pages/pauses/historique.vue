@@ -248,7 +248,7 @@ const detailTruncated = computed(() => activeDays.value.length > DETAIL_DAYS)
         <div
           class="mt-4.5 flex h-24 items-end gap-1"
           role="img"
-:aria-label="`${totalCount} pauses réparties sur ${activeDays.length} des ${period.days} derniers jours. ${detailTruncated ? 'Seules les journées avec pause les plus récentes sont détaillées ci-dessous.' : 'Le détail figure dans la liste qui suit.'}`"
+          :aria-label="`${totalCount} pauses réparties sur ${activeDays.length} des ${period.days} derniers jours. ${detailTruncated ? 'Seules les journées avec pause les plus récentes sont détaillées ci-dessous.' : 'Le détail figure dans la liste qui suit.'}`"
         >
           <span
             v-for="bar in chart"
