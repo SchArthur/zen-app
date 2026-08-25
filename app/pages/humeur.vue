@@ -26,7 +26,32 @@ if (!data.value) {
 
 const today = computed(() => data.value?.today ?? null)
 const history = computed(() => data.value?.history ?? [])
-const consentWithdrawn = computed(() => data.value?.consentWithdrawn ?? false)
+/**
+ * Trois états, pas deux (CU-04) : « retiré » s'explique, « jamais demandé » se
+ * demande. Confondre les deux fermerait le formulaire à quelqu'un qui n'a rien
+ * refusé, sans lui laisser d'issue — c'était le risque de la fermeture de la
+ * tolérance côté serveur, et c'est ici qu'il se règle.
+ */
+const consent = computed(() => data.value?.consent ?? 'unknown')
+
+const consentPending = ref(false)
+const consentFailed = ref(false)
+
+async function grantConsent() {
+  consentPending.value = true
+  consentFailed.value = false
+
+  try {
+    await $fetch('/api/consent', { method: 'PUT', body: { wellbeing: true } })
+    await refresh()
+  }
+  catch {
+    consentFailed.value = true
+  }
+  finally {
+    consentPending.value = false
+  }
+}
 
 /** Une déclaration déjà faite ouvre le formulaire sur ses valeurs (A1). */
 const mood = ref<number | null>(today.value?.mood ?? null)
@@ -163,7 +188,7 @@ const trendSummary = computed(() =>
       <section class="rounded-3xl bg-surface px-6.5 py-6 shadow-card lg:col-span-2">
         <!-- Exception E1 de CU-09 : consentement retiré, le formulaire n'est plus
              proposé. Le dire, plutôt que l'afficher et refuser à l'envoi. -->
-        <template v-if="consentWithdrawn">
+        <template v-if="consent === 'withdrawn'">
           <h2 class="font-display text-xl/[1.2] text-fg">
             Le suivi de votre bien-être est désactivé
           </h2>
@@ -173,11 +198,53 @@ const trendSummary = computed(() =>
             n'est enregistrée.
           </p>
           <NuxtLink
-            to="/profil"
+            to="/mes-donnees"
             class="mt-4.5 inline-block rounded-lg bg-surface-soft px-4 py-2.75 text-label/none font-bold text-fg-soft transition-colors hover:bg-mist-300"
           >
-            Revoir mes réglages
+            Revoir mes consentements
           </NuxtLink>
+        </template>
+
+        <!-- CU-04 : la question n'a jamais été posée. C'est le seul chemin par
+             lequel quelqu'un peut dire oui — sans lui, fermer la tolérance
+             serveur reviendrait à fermer le formulaire pour de bon. -->
+        <template v-else-if="consent === 'unknown'">
+          <h2 class="font-display text-xl/[1.2] text-fg">
+            Avant de déclarer, une question
+          </h2>
+          <p class="mt-2 max-w-prose text-label/[1.55] text-fg-muted">
+            Déclarer votre humeur et votre stress suppose votre accord explicite :
+            ce sont des données sensibles. Elles ne sont jamais montrées
+            nominativement à qui que ce soit, y compris à votre manager, et
+            n'apparaissent dans un climat d'équipe qu'à partir de cinq déclarants.
+            Refuser ne change rien au reste de l'application, et vous pouvez
+            revenir sur votre décision à tout moment.
+          </p>
+
+          <p
+            v-if="consentFailed"
+            role="alert"
+            class="mt-3 text-caption/[1.5] font-semibold text-danger-strong"
+          >
+            Votre choix n'a pas pu être enregistré. Réessayez dans un instant.
+          </p>
+
+          <div class="mt-4.5 flex flex-wrap gap-2.5">
+            <button
+              type="button"
+              :disabled="consentPending"
+              class="rounded-lg bg-accent px-5 py-2.75 text-label/none font-bold text-fg-onaccent transition-colors hover:bg-accent-strong disabled:cursor-not-allowed disabled:opacity-60"
+              @click="grantConsent"
+            >
+              {{ consentPending ? 'Enregistrement…' : 'J\'accepte le suivi de mon bien-être' }}
+            </button>
+            <NuxtLink
+              to="/confidentialite"
+              class="rounded-lg bg-surface-soft px-5 py-2.75 text-label/none font-bold text-fg-soft transition-colors hover:bg-mist-300"
+            >
+              Lire la politique de confidentialité
+            </NuxtLink>
+          </div>
         </template>
 
         <form

@@ -29,7 +29,9 @@ export default defineEventHandler(async (event) => {
     history,
     days,
     // L'écran doit pouvoir expliquer pourquoi le formulaire est fermé plutôt que
-    // de le présenter et de refuser à l'envoi (exception E1 de CU-09).
-    consentWithdrawn: consent ? !consent.granted : false,
+    // de le présenter et de refuser à l'envoi (exception E1 de CU-09). Trois
+    // états et non deux depuis le lot 7 : « jamais demandé » appelle la question,
+    // là où « retiré » appelle une explication.
+    consent: wellbeingConsentState(consent),
   }
 })
