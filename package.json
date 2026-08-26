@@ -11,7 +11,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "stripe:sync": "jiti scripts/stripe-sync.ts"
+    "stripe:sync": "jiti scripts/stripe-sync.ts",
+    "company": "jiti scripts/company.ts"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.17.0",
