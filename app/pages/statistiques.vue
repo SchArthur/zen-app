@@ -99,7 +99,7 @@ const stressTrend = computed(() => formatTrend(trends.value.stress, { decimals: 
         <h1 class="font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
           Mes statistiques
         </h1>
-        <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+        <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
           Vos habitudes sur la période, et rien d'autre : pas de score global, pas de
           comparaison avec vos collègues. Le seul point de repère est votre période
           précédente.

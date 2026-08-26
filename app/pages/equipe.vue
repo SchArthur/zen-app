@@ -46,7 +46,7 @@ function selectPeriod(value: Period) {
         <h1 class="font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
           Équipe {{ report.team.name }}
         </h1>
-        <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+        <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
           {{ report.headcount }} {{ plural(report.headcount, 'personne') }}. Cet écran ne montre que des moyennes : aucun nom,
           aucune déclaration individuelle, aucun classement entre collègues — ni ici, ni dans
           l'interface qui l'alimente.

@@ -8,7 +8,9 @@ useSeoMeta({ title: 'Mes données' })
 
 const { clear } = useUserSession()
 
-const { data, error } = await useFetch('/api/consent')
+// Même objet que le bandeau et que la mesure d'audience : une décision prise
+// ici referme le bandeau et coupe le script sans second aller-retour.
+const { data, error } = await useConsent()
 
 if (error.value) {
   const apiError = toApiError(error.value)
@@ -117,7 +119,7 @@ async function deleteAccount() {
       <h1 class="font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
         Mes données
       </h1>
-      <p class="mt-1.5 text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+      <p class="mt-1.5 text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
         Vos choix, une copie de tout ce que nous conservons, et la sortie — sans
         avoir à écrire à qui que ce soit.
       </p>

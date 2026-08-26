@@ -167,7 +167,7 @@ const trendSummary = computed(() =>
       <h1 class="font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
         Mon humeur du jour
       </h1>
-      <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+      <p class="mt-1.5 max-w-prose text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
         Deux curseurs, dix secondes. Vos réponses ne sont jamais montrées individuellement :
         elles ne servent qu'à vos propres statistiques et à des moyennes d'équipe, à partir
         de cinq personnes.
@@ -361,7 +361,7 @@ const trendSummary = computed(() =>
             v-for="(entry, index) in trend"
             :key="entry.date"
             class="flex-1 text-center text-caption font-semibold"
-            :class="index === trend.length - 1 ? 'font-bold text-accent-strong' : 'text-mist-400'"
+            :class="index === trend.length - 1 ? 'font-bold text-accent-strong' : 'text-fg-subtle'"
           >
             {{ entry.initial }}
           </span>

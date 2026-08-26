@@ -200,7 +200,7 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
         <h1 class="font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
           Bonjour, {{ user?.firstName }}
         </h1>
-        <p class="mt-1.5 text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+        <p class="mt-1.5 text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
           {{ today }}
         </p>
       </div>
@@ -377,7 +377,7 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
               class="flex-1 text-center text-caption"
               :class="index === week.length - 1
                 ? 'font-bold text-accent-strong'
-                : 'font-semibold text-mist-400'"
+                : 'font-semibold text-fg-subtle'"
             >
               {{ day.initial }}
             </span>
@@ -481,7 +481,9 @@ const quote = 'Prendre soin de soi n\'est pas un luxe, c\'est ce qui rend le res
           <h2 class="text-label font-bold text-fg-subtle">Temps assis d'affilée</h2>
 
           <template v-if="sittingMin !== null">
-            <p class="mt-2.5 font-display text-[1.6875rem]/none text-sable-600">
+            <!-- `warning-strong` et non la teinte brute `sable-600`, qui tombait
+                 à 2,88:1 sur blanc là où un grand texte en demande 3. -->
+            <p class="mt-2.5 font-display text-[1.6875rem]/none text-warning-strong">
               {{ formatMinutes(sittingMin) }}
             </p>
             <p class="mt-1.25 text-label/[1.4] font-medium text-fg-faint">

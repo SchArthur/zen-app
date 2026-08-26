@@ -75,7 +75,7 @@ async function submit() {
       <h1 class="font-display text-[1.75rem]/[1.1] text-fg">
         Créer un compte
       </h1>
-      <p class="mt-1.5 text-label/[1.45] font-medium text-mist-600">
+      <p class="mt-1.5 text-label/[1.45] font-medium text-fg-muted">
         Quelques minutes par jour pour souffler, sans quitter votre poste.
       </p>
 

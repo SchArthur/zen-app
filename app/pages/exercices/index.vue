@@ -134,7 +134,7 @@ async function markDone(slug: string, title: string) {
       <h1 class="font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
         Exercices
       </h1>
-      <p class="mt-1.5 text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+      <p class="mt-1.5 text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
         Tout se fait au poste, sans matériel. Choisissez d'abord le temps que vous avez.
       </p>
     </header>

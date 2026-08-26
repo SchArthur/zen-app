@@ -75,7 +75,7 @@ async function resend() {
     <h1 class="font-display text-[1.75rem]/[1.1] text-fg">
       Content de vous revoir
     </h1>
-    <p class="mt-1.5 text-label/[1.45] font-medium text-mist-600">
+    <p class="mt-1.5 text-label/[1.45] font-medium text-fg-muted">
       Connectez-vous pour retrouver votre tableau de bord.
     </p>
 

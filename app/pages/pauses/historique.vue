@@ -179,7 +179,7 @@ const detailTruncated = computed(() => activeDays.value.length > DETAIL_DAYS)
         <h1 class="mt-2 font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
           Historique de mes pauses
         </h1>
-        <p class="mt-1.5 text-label/[1.4] font-medium text-mist-600 lg:text-sm/[1.4]">
+        <p class="mt-1.5 text-label/[1.4] font-medium text-fg-muted lg:text-sm/[1.4]">
           {{ intro }}
         </p>
       </div>
@@ -261,7 +261,7 @@ const detailTruncated = computed(() => activeDays.value.length > DETAIL_DAYS)
 
         <div
           aria-hidden="true"
-          class="mt-2 flex justify-between text-caption font-semibold text-mist-400"
+          class="mt-2 flex justify-between text-caption font-semibold text-fg-subtle"
         >
           <span>{{ chart[0]?.label }}</span>
           <span class="font-bold text-accent-strong">{{ chart[chart.length - 1]?.label }}</span>
