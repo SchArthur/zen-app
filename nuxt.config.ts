@@ -35,6 +35,10 @@ const PRIVATE_ROUTES = [
   '/mes-donnees',
   '/equipe',
   '/entreprise',
+  // Écran de souscription, à ne pas confondre avec la section tarifaire de la
+  // page d'accueil : celle-ci est publique et indexable, celui-là est réservé au
+  // responsable RH et n'a rien à faire dans un plan de site.
+  '/tarifs',
   '/connexion',
   '/inscription',
   '/confirmer-email',
@@ -184,9 +188,24 @@ export default defineNuxtConfig({
        * `style-src` ferait ignorer `unsafe-inline` par le navigateur — c'est la
        * règle de la spécification — et ces attributs cesseraient de s'appliquer.
        *
-       * À rouvrir au lot 8, nommément et pas en élargissant : le tunnel de
-       * paiement et l'outil de mesure d'audience demanderont chacun leur
-       * origine, et Stripe un `frame-src`.
+       * **Le tunnel de paiement du lot 8 n'a rien rouvert, et c'est un
+       * résultat, pas un oubli.** Ce commentaire annonçait un `frame-src` et un
+       * `connect-src` pour le prestataire ; l'intégration retenue n'en demande
+       * aucun des deux. Le paiement est un tunnel **hébergé** : le navigateur
+       * quitte l'application pour le domaine du prestataire, et une navigation
+       * de premier plan n'est régie par aucune directive de cette politique.
+       * Aucun script tiers n'est chargé sur nos pages, aucun cadre n'y est
+       * incrusté, aucun appel n'est passé depuis le navigateur à l'interface du
+       * prestataire.
+       *
+       * L'intégration **incrustée**, elle, aurait demandé les trois directives
+       * (`js.stripe.com` en scripts et en cadres, `api.stripe.com` en
+       * connexions). Elle a été écartée pour cette raison même : elle ferait
+       * entrer le premier script tiers non consenti du produit sur les pages
+       * d'une application de santé au travail, pour un simple confort
+       * d'affichage. Les inscrire quand même « pour être prêt » reviendrait à
+       * en payer le prix sans en tirer le confort — et une origine tierce
+       * autorisée au cas où est une origine tierce autorisée.
        */
       contentSecurityPolicy: {
         'base-uri': ['\'none\''],
@@ -363,6 +382,23 @@ export default defineNuxtConfig({
       // cookie est httpOnly et sameSite=lax par défaut, et passe en secure
       // dès que l'application est servie en HTTPS.
       maxAge: 60 * 60 * 8,
+    },
+    /**
+     * Paiement (F11, CU-15). Vide par défaut, et **hors de `public`** : ces deux
+     * secrets ne doivent jamais atteindre le navigateur.
+     *
+     * Un environnement sans clés démarre normalement et le dit — `/tarifs`
+     * annonce que le paiement n'est pas configuré ici, plutôt que d'offrir un
+     * bouton qui échoue. C'est le cas du poste d'un relecteur qui clone le
+     * dépôt.
+     *
+     * Contrairement à l'hôte de mesure d'audience, elles sont lues **à
+     * l'exécution** : rien de ce qu'elles gouvernent n'est figé dans le paquet
+     * servi.
+     */
+    stripe: {
+      secretKey: '',
+      webhookSecret: '',
     },
     mail: {
       host: 'localhost',

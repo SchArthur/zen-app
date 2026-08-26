@@ -10,7 +10,8 @@
     "postinstall": "nuxt prepare",
     "lint": "eslint .",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "stripe:sync": "jiti scripts/stripe-sync.ts"
   },
   "dependencies": {
     "@nuxt/eslint": "^1.17.0",
@@ -26,6 +27,7 @@
     "nuxt": "^4.5.2",
     "nuxt-auth-utils": "^0.5.30",
     "nuxt-security": "^2.5.1",
+    "stripe": "^22.5.0",
     "tailwindcss": "^4.3.3",
     "vue": "^3.5.41",
     "vue-chartjs": "^5.3.4",
