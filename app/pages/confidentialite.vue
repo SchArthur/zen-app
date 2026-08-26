@@ -118,7 +118,7 @@ const rights: Right[] = [
         <h1 class="font-display text-[1.875rem]/[1.1] text-fg lg:text-[2.375rem]/[1.05]">
           Politique de confidentialité
         </h1>
-        <p class="mt-2 text-sm/[1.5] font-medium text-mist-600">
+        <p class="mt-2 text-sm/[1.5] font-medium text-fg-muted">
           Version {{ version }} — mise à jour le {{ updatedAt }}.
         </p>
         <p class="mt-4 text-base/[1.6] text-fg-soft">

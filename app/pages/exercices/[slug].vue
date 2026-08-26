@@ -90,7 +90,7 @@ async function markDone() {
       <h1 class="mt-2.5 font-display text-[1.625rem]/[1.05] text-fg lg:text-[2rem]/[1.05]">
         {{ exercise.title }}
       </h1>
-      <p class="mt-1.5 max-w-prose text-label/[1.5] font-medium text-mist-600 lg:text-sm/[1.5]">
+      <p class="mt-1.5 max-w-prose text-label/[1.5] font-medium text-fg-muted lg:text-sm/[1.5]">
         {{ exercise.description }}
       </p>
     </header>

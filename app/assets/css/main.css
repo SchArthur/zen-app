@@ -116,12 +116,17 @@
   --color-surface-sunken: #eaf0ea; /* pistes, champs en lecture seule */
   --color-canvas: #e7e5df; /* crème — pages publiques, landing */
 
-  /* Textes, du plus fort au plus discret. */
+  /* Textes, du plus fort au plus discret.
+     Les quatre premiers niveaux tiennent **tous** le rapport de 4,5:1 exigé par
+     NF3 sur les trois fonds du produit — blanc, mist-100 et le crème des pages
+     publiques. C'est ce qui borne la hiérarchie par le bas : il n'existe pas de
+     cran plus discret que `faint`, parce qu'il ne serait plus lisible.
+     Mesures relevées le 25/08/2026 ; voir l'écart d'accessibilité au registre. */
   --color-fg: #2c362f;
   --color-fg-soft: #4a524c; /* paragraphes */
   --color-fg-muted: #5b635c; /* texte secondaire */
-  --color-fg-subtle: #7d847d; /* libellés de cartes */
-  --color-fg-faint: #9a9890; /* métadonnées, unités */
+  --color-fg-subtle: #6c726c; /* libellés de cartes — 4,96:1 sur blanc, 4,54:1 sur mist-100 */
+  --color-fg-faint: #72706b; /* métadonnées, unités — 4,92:1 sur blanc, 4,51:1 sur mist-100 */
   --color-fg-disabled: #b0b0a8;
   --color-fg-onaccent: #ffffff; /* texte posé sur un aplat d'accent */
 
@@ -129,19 +134,19 @@
      sur les deux fonds (blanc et mist-100). */
   --color-border: rgb(80 110 90 / 0.08);
   --color-border-strong: rgb(80 110 90 / 0.16);
-  --color-ring: #5e9576;
-  --color-placeholder: #9a9890;
+  --color-ring: #518065;
+  --color-placeholder: #72706b; /* 4,51:1 sur le fond des champs */
   --color-overlay: rgb(44 54 47 / 0.45); /* voile des modales */
 
   /* Accent — surchargé à l'exécution par [data-accent] (voir plus bas). */
-  --color-accent: #5e9576;
-  --color-accent-strong: #48745c; /* texte/icône sur --color-accent-soft */
+  --color-accent: #518065; /* 4,53:1 avec du blanc dessus */
+  --color-accent-strong: #456f58; /* texte/icône sur fond clair — 4,52:1 sur le crème des pages publiques */
   --color-accent-soft: #e6f0e8; /* fond d'état actif, pastilles */
   --color-accent-muted: #c7dbcd; /* barres et aplats secondaires */
   --color-accent-contrast: #ffffff;
 
   /* États. Chaque état a un fond doux + une teinte de texte lisible dessus. */
-  --color-success: #5e9576;
+  --color-success: #518065;
   --color-success-soft: #eef4ef;
   --color-success-strong: #48745c;
   --color-info: #5b8fb8;
@@ -149,8 +154,8 @@
   --color-info-strong: #41607d;
   --color-warning: #d99a5b;
   --color-warning-soft: #fbf2e8;
-  --color-warning-strong: #9a6a36;
-  --color-danger: #c77b72;
+  --color-warning-strong: #946634;
+  --color-danger: #a3655d; /* 4,59:1 avec du blanc dessus */
   --color-danger-soft: #fbf0ee;
   --color-danger-strong: #8e4e46;
 
@@ -267,19 +272,19 @@
    thème quelle que soit la spécificité. */
 
 [data-accent='ciel'] {
-  --color-accent: #5b8fb8;
-  --color-accent-strong: #3f6e94;
+  --color-accent: #4e7b9e; /* 4,51:1 avec du blanc dessus */
+  --color-accent-strong: #3d6b90;
   --color-accent-soft: #e4eef6;
   --color-accent-muted: #9cc6d6;
-  --color-ring: #5b8fb8;
+  --color-ring: #4e7b9e;
 }
 
 [data-accent='lavande'] {
-  --color-accent: #8478b8;
+  --color-accent: #796ea9; /* 4,52:1 avec du blanc dessus */
   --color-accent-strong: #5f5494;
   --color-accent-soft: #eceaf6;
   --color-accent-muted: #c3bce0;
-  --color-ring: #8478b8;
+  --color-ring: #796ea9;
 }
 
 /* ══════════ Base ══════════ */

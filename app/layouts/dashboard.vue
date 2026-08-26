@@ -276,7 +276,7 @@ async function logout() {
           :to="item.to"
           :aria-current="isActive(item.to) ? 'page' : undefined"
           class="flex flex-col items-center gap-1.5 rounded-lg px-3 py-1 transition-colors"
-          :class="isActive(item.to) ? 'font-bold text-accent-strong' : 'font-semibold text-mist-400'"
+          :class="isActive(item.to) ? 'font-bold text-accent-strong' : 'font-semibold text-fg-subtle'"
         >
           <span class="size-1.75 rounded-full bg-current" />
           <span class="text-2xs">{{ item.short ?? item.label }}</span>

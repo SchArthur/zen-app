@@ -18,7 +18,7 @@
           animated
           large
         />
-        <p class="font-display text-lg text-mist-600 italic">
+        <p class="font-display text-lg text-fg-muted italic">
           Bien-être &amp; santé au travail
         </p>
       </div>

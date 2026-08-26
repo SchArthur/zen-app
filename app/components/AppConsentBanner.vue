@@ -27,11 +27,9 @@
 
 const { loggedIn } = useUserSession()
 
-// `useFetch` et non `$fetch` : l'état est résolu au rendu serveur, donc le
-// bandeau est déjà dans le HTML — il n'apparaît pas après coup en poussant la
-// page vers le bas. Une seule requête par chargement, réutilisée ensuite pour
-// toute la navigation interne.
-const { data, refresh } = await useFetch('/api/consent')
+// État partagé : la mesure d'audience lit le même objet, ce qui interdit qu'un
+// script se charge alors que le bandeau demande encore (voir `useConsent`).
+const { data, refresh } = await useConsent()
 
 // La décision de compte n'est pas celle du visiteur : à la connexion comme à la
 // déconnexion, l'état est relu. Sans cela, quelqu'un qui vient de se connecter
