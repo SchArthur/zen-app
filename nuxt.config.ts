@@ -198,6 +198,12 @@ export default defineNuxtConfig({
        * incrusté, aucun appel n'est passé depuis le navigateur à l'interface du
        * prestataire.
        *
+       * **Mesuré sur le paquet de production le 26/08/2026**, et pas déduit :
+       * l'en-tête servi ne contient aucune origine du prestataire — `connect-src
+       * 'self'`, `frame-src 'self'` — et le parcours de souscription complet
+       * aboutit malgré tout sur son domaine. Une politique qui n'autorise rien
+       * et un tunnel qui fonctionne quand même : il n'a donc besoin de rien.
+       *
        * L'intégration **incrustée**, elle, aurait demandé les trois directives
        * (`js.stripe.com` en scripts et en cadres, `api.stripe.com` en
        * connexions). Elle a été écartée pour cette raison même : elle ferait
