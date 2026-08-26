@@ -44,6 +44,24 @@ describe('isPublicApiRoute', () => {
   it('laisse passer les routes internes des modules Nuxt', () => {
     expect(isPublicApiRoute('/api/_auth/session')).toBe(true)
   })
+
+  /**
+   * CU-15 — la notification de paiement. Son appelant est le prestataire, qui
+   * n'a évidemment pas de session : il s'authentifie par une signature du corps
+   * exact de la requête. « Publique » au sens de cette liste ne veut donc pas
+   * dire « ouverte ».
+   *
+   * Le reste du tunnel de paiement, lui, exige une session comme tout le
+   * monde — et le vérifier ici garde la liste courte : c'est la seule route de
+   * paiement qui avait une raison d'y entrer.
+   */
+  it('n\'ouvre du tunnel de paiement que la notification signée', () => {
+    expect(isPublicApiRoute('/api/billing/webhook')).toBe(true)
+
+    for (const route of ['/api/billing/checkout', '/api/billing/subscription', '/api/billing/confirm', '/api/billing/portal']) {
+      expect(isPublicApiRoute(route), route).toBe(false)
+    }
+  })
 })
 
 describe('assertRole', () => {

@@ -502,9 +502,11 @@ const guarantees = [
           </ul>
 
           <p class="mt-6 text-caption/[1.55] text-fg-faint">
-            Prix hors taxes. La souscription en ligne ouvre au déploiement ;
-            d'ici là, créez un compte avec votre adresse professionnelle pour
-            essayer le produit.
+            Prix hors taxes, facturés au mois et résiliables à tout moment. La
+            souscription se fait dans l'application, par le responsable des
+            ressources humaines de votre entreprise. Commencez par créer votre
+            compte avec votre adresse professionnelle : le produit s'essaie avant
+            de s'acheter.
           </p>
         </div>
       </section>

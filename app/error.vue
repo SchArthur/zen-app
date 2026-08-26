@@ -16,6 +16,9 @@ import type { NuxtError } from '#app'
  * - **401** — session absente ou expirée. Elle mène à la connexion, en gardant
  *   l'adresse demandée pour y revenir après (même paramètre `suite` que le
  *   middleware de route).
+ * - **402** — la formule souscrite par l'entreprise ne comprend pas cet écran
+ *   (CU-15). Distinct du 403 à dessein : « pas vous » n'a pas d'issue, « pas
+ *   encore payé » en a une, et la page mène alors aux formules.
  * - **403** — rôle insuffisant (matrice des accès, `cas-utilisation.md` §6).
  *   La page ne nomme pas le rôle attendu, comme `assertRole` : l'indiquer
  *   renseignerait sur l'organisation interne de l'entreprise.
@@ -37,6 +40,7 @@ const status = computed(() => props.error.statusCode ?? 500)
 
 const titles: Record<number, string> = {
   401: 'Votre session a expiré',
+  402: 'Cet écran demande une autre formule',
   403: 'Cette page ne vous est pas ouverte',
   404: 'Cette page n\'existe pas',
 }
@@ -44,6 +48,7 @@ const titles: Record<number, string> = {
 /** Repli écrit pour chaque cas, quand le serveur n'a rien fourni de lisible. */
 const details: Record<number, string> = {
   401: 'Reconnectez-vous pour reprendre là où vous en étiez.',
+  402: 'L\'abonnement de votre entreprise ne comprend pas cette fonction.',
   403: 'Votre rôle ne donne pas accès à cet écran.',
   404: 'L\'adresse demandée ne correspond à aucun écran de ZenTime.',
 }
@@ -64,7 +69,7 @@ const detail = computed(() => {
     ?? 'L\'application n\'a pas pu répondre. Ce n\'est pas de votre fait : réessayez dans un instant.'
 })
 
-const { loggedIn } = useUserSession()
+const { loggedIn, user } = useUserSession()
 
 const route = useRoute()
 
@@ -79,6 +84,15 @@ const route = useRoute()
 const home = computed(() => {
   if (status.value === 401) {
     return { label: 'Se reconnecter', to: `/connexion?suite=${encodeURIComponent(route.fullPath)}` }
+  }
+
+  // 402 mène là où l'on peut y remédier. C'est toute la raison d'avoir
+  // distingué « pas payé » de « pas vous » : un 403 n'a pas d'issue, un 402 si.
+  // Encore faut-il que celui qui lit puisse s'en servir — l'écran de
+  // souscription est réservé au responsable RH (CU-15), et y envoyer un
+  // collaborateur le mènerait d'un refus à un autre.
+  if (status.value === 402 && user.value?.role === 'HR') {
+    return { label: 'Voir les formules', to: '/tarifs' }
   }
 
   return loggedIn.value
