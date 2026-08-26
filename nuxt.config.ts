@@ -53,7 +53,17 @@ const PRIVATE_ROUTES = [
  * l'hébergeur visé les variables sont présentes à la compilation, mais c'est une
  * condition, pas un acquis.
  */
-const analyticsHost = (process.env.NUXT_PUBLIC_ANALYTICS_HOST || '').trim()
+const analyticsHostRaw = (process.env.NUXT_PUBLIC_ANALYTICS_HOST || '').trim()
+const analyticsHost = (() => {
+  if (!analyticsHostRaw) return ''
+
+  try {
+    return new URL(analyticsHostRaw.startsWith('http') ? analyticsHostRaw : `https://${analyticsHostRaw}`).origin
+  }
+  catch {
+    return ''
+  }
+})()
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
