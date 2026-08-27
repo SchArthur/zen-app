@@ -24,6 +24,13 @@ export const PUBLIC_API_ROUTES = [
   // route ne lit et n'écrit que les décisions de l'appelant, identifié par sa
   // session ou par son propre cookie de consentement.
   '/api/consent',
+  // CU-15 — notification de paiement. L'appelant est le prestataire, qui n'a
+  // évidemment pas de session : il s'authentifie par une **signature** du corps
+  // exact de la requête, vérifiée dès la première ligne du gestionnaire. Publique
+  // au sens de cette liste ne veut pas dire ouverte — c'est la seule route du
+  // produit dont l'authentification n'est pas celle de tout le monde, et c'est
+  // aussi la raison pour laquelle elle est nommée ici plutôt que devinée.
+  '/api/billing/webhook',
 ] as const
 
 export function isPublicApiRoute(path: string) {

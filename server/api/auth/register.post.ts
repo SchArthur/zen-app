@@ -26,16 +26,26 @@ export default defineEventHandler(async (event) => {
     select: { id: true },
   })
 
-  // Refus explicite : il porte sur le domaine, jamais sur une adresse précise.
-  // Il ne révèle donc aucun compte, et évite qu'une faute de frappe dans le
-  // domaine se solde par un courriel qui n'arrivera jamais.
+  /**
+   * Refus explicite : il porte sur le **domaine**, jamais sur une adresse
+   * précise. Il ne révèle donc aucun compte, et évite qu'une faute de frappe
+   * dans le domaine se solde par un courriel qui n'arrivera jamais.
+   *
+   * Le message dit désormais **quoi faire ensuite**. Il annonçait « cette
+   * adresse n'appartient à aucune entreprise cliente » et s'arrêtait là :
+   * or ouvrir un compte entreprise n'est pas une fonction du logiciel mais un
+   * acte commercial de l'éditeur (`scripts/company.ts`), si bien que le refus
+   * était un cul-de-sac dont **aucun visiteur ne pouvait sortir**. Un produit
+   * qui affiche ses tarifs sur sa page d'accueil et refuse toute inscription
+   * sans dire par où passer n'a pas de premier client possible.
+   */
   if (!company) {
     throw createError({
       statusCode: 422,
       statusMessage: 'Données invalides',
       data: {
         errors: {
-          email: ['Cette adresse n\'appartient à aucune entreprise cliente de ZenTime.'],
+          email: ['Votre entreprise n\'utilise pas encore ZenTime. Écrivez à bonjour@zentime.fr pour faire ouvrir son compte : le rattachement se fait par le domaine de votre adresse professionnelle.'],
         },
       },
     })

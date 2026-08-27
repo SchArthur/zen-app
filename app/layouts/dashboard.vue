@@ -76,7 +76,15 @@ const commonNavigation: NavItem[] = [
 const navigationByRole: Record<Role, NavItem[]> = {
   COLLABORATOR: commonNavigation,
   MANAGER: [...commonNavigation, { label: 'Mon équipe', to: '/equipe', short: 'Équipe' }],
-  HR: [...commonNavigation, { label: 'Entreprise', to: '/entreprise', short: 'Global' }],
+  HR: [
+    ...commonNavigation,
+    { label: 'Entreprise', to: '/entreprise', short: 'Global' },
+    // CU-15 — le seul rôle qui souscrit. Écarté de la barre d'onglets mobile,
+    // qui n'en affiche que quatre : on ne souscrit pas un abonnement
+    // d'entreprise depuis un téléphone entre deux réunions, et la place vaut
+    // mieux à la vue consolidée.
+    { label: 'Abonnement', to: '/tarifs', desktopOnly: true },
+  ],
 }
 
 /** Dégradés d'avatar de la maquette, une teinte par rôle. */

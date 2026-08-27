@@ -502,9 +502,17 @@ const guarantees = [
           </ul>
 
           <p class="mt-6 text-caption/[1.55] text-fg-faint">
-            Prix hors taxes. La souscription en ligne ouvre au déploiement ;
-            d'ici là, créez un compte avec votre adresse professionnelle pour
-            essayer le produit.
+            Prix hors taxes, facturés au mois et résiliables à tout moment. La
+            souscription se fait dans l'application, par le responsable des
+            ressources humaines de votre entreprise. Si ZenTime n'y est pas
+            encore déployé, écrivez-nous à
+            <a
+              href="mailto:bonjour@zentime.fr"
+              class="underline underline-offset-2 hover:text-fg-muted"
+            >bonjour@zentime.fr</a>
+            pour faire ouvrir son compte : c'est le domaine de votre adresse
+            professionnelle qui rattachera ensuite chacun, sans qu'aucune liste
+            de salariés ne nous soit transmise.
           </p>
         </div>
       </section>
