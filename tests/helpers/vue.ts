@@ -103,6 +103,7 @@ Object.assign(globalThis, {
   useRouter: () => router,
   useUserSession: () => userSession,
   defineNuxtRouteMiddleware: <T>(middleware: T) => middleware,
+  defineNuxtPlugin: <T>(plugin: T) => plugin,
   useRuntimeConfig: () => ({ public: { appUrl: 'http://localhost:3000', analytics: { host: '', domain: '' } } }),
   useState: <T>(_key: string, init?: () => T) => vue.ref(init?.()),
   useCookie: <T>(_name: string, options?: { default?: () => T }) => vue.ref(options?.default?.()),

@@ -24,3 +24,6 @@ logs
 !.env.example
 
 /lib/generated/prisma
+
+# Rapport de couverture (vitest --coverage)
+coverage
