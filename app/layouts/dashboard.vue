@@ -127,6 +127,20 @@ async function logout() {
   try {
     await $fetch('/api/auth/logout', { method: 'POST' })
   }
+  catch {
+    /**
+     * L'échec est **rattrapé** plutôt que laissé filer, et il n'est pas remonté.
+     *
+     * Rattrapé, parce qu'un gestionnaire de clic asynchrone dont la promesse est
+     * rejetée produit un rejet non traité. Le `finally` ci-dessous s'exécutait
+     * bien, mais l'erreur poursuivait sa route derrière lui — constaté en
+     * écrivant le test du cas réseau, où il faisait échouer la suite entière.
+     *
+     * Non remonté, parce qu'il n'y a rien à faire pour l'utilisateur : la route
+     * de déconnexion est idempotente, le cookie est scellé côté client, et
+     * `clear` suffit à ce que l'application cesse d'afficher un compte.
+     */
+  }
   finally {
     // `clear` vide l'état côté navigateur. Il s'exécute même si l'appel réseau
     // a échoué : rester affiché comme connecté après avoir cliqué sur
