@@ -1,3 +1,25 @@
+import Stripe from 'stripe'
+
+export function throwCheckoutSessionRetrieveError(error: unknown): never {
+  if (error instanceof Stripe.errors.StripeInvalidRequestError && error.code === 'resource_missing') {
+    throw createError({
+      statusCode: 404,
+      statusMessage: 'Cette session de paiement est introuvable.',
+      data: { code: 'checkout_session_unknown' },
+    })
+  }
+
+  if (error instanceof Stripe.errors.StripeError) {
+    throw createError({
+      statusCode: 502,
+      statusMessage: 'La session de paiement n\'a pas pu être relue auprès de notre prestataire. Réessayez dans un instant.',
+      data: { code: 'checkout_session_unavailable' },
+    })
+  }
+
+  throw error
+}
+
 /**
  * CU-15 — confirmation au retour du tunnel de paiement.
  *
@@ -22,18 +44,15 @@
 export default defineEventHandler(async (event) => {
   const { user } = await requireRole(event, 'HR')
   const { session: sessionId } = await validateBody(event, checkoutConfirmSchema)
+  const stripe = stripeClient(event)
 
   let session
 
   try {
-    session = await stripeClient(event).checkout.sessions.retrieve(sessionId)
+    session = await stripe.checkout.sessions.retrieve(sessionId)
   }
-  catch {
-    throw createError({
-      statusCode: 404,
-      statusMessage: 'Cette session de paiement est introuvable.',
-      data: { code: 'checkout_session_unknown' },
-    })
+  catch (error) {
+    throwCheckoutSessionRetrieveError(error)
   }
 
   const companyId = session.client_reference_id || session.metadata?.companyId
