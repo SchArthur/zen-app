@@ -48,10 +48,49 @@ export const userSession = {
 }
 
 /** La route courante, modifiable avant le montage. */
+function deriveFullPath(path: string, query: Record<string, string | string[] | undefined>) {
+  const search = new URLSearchParams()
+
+  for (const [key, value] of Object.entries(query)) {
+    if (value === undefined) continue
+
+    const values = Array.isArray(value) ? value : [value]
+
+    for (const item of values) {
+      search.append(key, item)
+    }
+  }
+
+  const searchString = search.toString()
+  return searchString ? `${path}?${searchString}` : path
+}
+
 export const route = vue.reactive({
   path: '/',
   query: {} as Record<string, string | string[] | undefined>,
   params: {} as Record<string, string>,
+})
+
+Object.defineProperty(route, 'fullPath', {
+  get() {
+    return deriveFullPath(route.path, route.query)
+  },
+  set(value: string) {
+    const [path, search = ''] = value.split('?')
+    route.path = path || '/'
+
+    const params = new URLSearchParams(search)
+    const nextQuery: Record<string, string | string[] | undefined> = {}
+
+    for (const key of new Set(params.keys())) {
+      const values = params.getAll(key)
+      nextQuery[key] = values.length > 1 ? values : values[0]
+    }
+
+    route.query = nextQuery
+  },
+  enumerable: true,
+  configurable: true,
 })
 
 /** Les navigations demandées au routeur (filtres d'URL notamment). */
@@ -70,15 +109,44 @@ export const router = {
 export const fetchResponses = new Map<string, unknown>()
 
 /** Programme la réponse de `useFetch` pour une route donnée. */
-export function serve(path: string, payload: unknown) {
-  fetchResponses.set(path, payload)
+function buildFetchKey(path: string, options?: { key?: string; query?: Record<string, unknown> }) {
+  if (typeof options?.key === 'string' && options.key.length > 0) {
+    return options.key
+  }
+
+  const query = options?.query ?? {}
+  const entries = Object.entries(query)
+
+  if (entries.length === 0) {
+    return path
+  }
+
+  const search = new URLSearchParams()
+
+  for (const [key, value] of entries) {
+    if (value === undefined || value === null) continue
+
+    const values = Array.isArray(value) ? value : [value]
+
+    for (const item of values) {
+      search.append(key, String(item))
+    }
+  }
+
+  const searchString = search.toString()
+  return searchString ? `${path}${path.includes('?') ? '&' : '?'}${searchString}` : path
 }
 
-function useFetch(path: string | (() => string), _options?: unknown) {
+export function serve(path: string, payload: unknown) {
+  fetchResponses.set(buildFetchKey(path), payload)
+}
+
+function useFetch(path: string | (() => string), options?: { key?: string; query?: Record<string, unknown> }) {
   const resolved = typeof path === 'function' ? path() : path
+  const key = buildFetchKey(resolved, options)
 
   return Promise.resolve({
-    data: vue.ref(fetchResponses.get(resolved) ?? null),
+    data: vue.ref(fetchResponses.get(key) ?? fetchResponses.get(resolved) ?? null),
     error: vue.ref(null),
     status: vue.ref('success'),
     refresh: vi.fn(),
