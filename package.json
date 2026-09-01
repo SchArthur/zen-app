@@ -11,6 +11,9 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
     "stripe:sync": "jiti scripts/stripe-sync.ts",
     "company": "jiti scripts/company.ts"
   },
@@ -37,8 +40,13 @@
   },
   "devDependencies": {
     "@adonisjs/hash": "^9.1.1",
+    "@playwright/test": "^1.62.1",
     "@types/nodemailer": "^8.0.1",
+    "@vitejs/plugin-vue": "^6.0.8",
+    "@vitest/coverage-v8": "^4.1.11",
+    "@vue/test-utils": "^2.4.11",
     "dotenv": "^17.4.2",
+    "happy-dom": "^20.11.8",
     "jiti": "^2.7.0",
     "prisma": "^7.9.1",
     "typescript": "^5.9",
