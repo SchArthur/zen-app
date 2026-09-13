@@ -1,0 +1,283 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../lib/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  COLLABORATOR
+  MANAGER
+  HR
+}
+
+enum ExerciseType {
+  STRETCHING
+  BREATHING
+  MEDITATION
+}
+
+enum TokenType {
+  EMAIL_VERIFICATION
+  PASSWORD_RESET
+}
+
+enum ConsentType {
+  TERMS
+  WELLBEING_DATA
+  ANALYTICS
+}
+
+enum Plan {
+  STANDARD
+  PREMIUM
+}
+
+enum SubscriptionStatus {
+  INCOMPLETE
+  ACTIVE
+  PAST_DUE
+  CANCELED
+}
+
+model Company {
+  id   String @id @default(cuid())
+  name String
+  // Rattachement d'un inscrit à son entreprise : le domaine de son adresse
+  // professionnelle. Une adresse hors domaine enregistré ne peut pas s'inscrire.
+  emailDomain  String        @unique
+  createdAt    DateTime      @default(now())
+  teams        Team[]
+  users        User[]
+  subscription Subscription?
+}
+
+model Team {
+  id        String  @id @default(cuid())
+  name      String
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  members   User[]
+
+  @@unique([companyId, name])
+}
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  passwordHash    String
+  firstName       String
+  lastName        String
+  role            Role      @default(COLLABORATOR)
+  emailVerifiedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  teamId    String?
+  team      Team?   @relation(fields: [teamId], references: [id], onDelete: SetNull)
+
+  preference    Preference?
+  breakSessions BreakSession[]
+  exerciseLogs  ExerciseLog[]
+  moodCheckIns  MoodCheckIn[]
+  consents      Consent[]
+  tokens        VerificationToken[]
+  accessLogs    AccessLog[]
+
+  @@index([companyId])
+  @@index([teamId])
+}
+
+model VerificationToken {
+  id        String    @id @default(cuid())
+  tokenHash String    @unique
+  type      TokenType
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+}
+
+model Preference {
+  id                  String         @id @default(cuid())
+  workStartHour       Int            @default(9)
+  workEndHour         Int            @default(18)
+  remindersEnabled    Boolean        @default(true)
+  reminderIntervalMin Int            @default(90)
+  favoriteTypes       ExerciseType[]
+  updatedAt           DateTime       @updatedAt
+
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model BreakSession {
+  id          String    @id @default(cuid())
+  startedAt   DateTime  @default(now())
+  endedAt     DateTime?
+  durationSec Int?
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, startedAt])
+}
+
+model Exercise {
+  id          String       @id @default(cuid())
+  slug        String       @unique
+  title       String
+  description String
+  // Déroulé pas à pas exigé par F4. Liste ordonnée plutôt qu'un bloc de texte :
+  // la fiche numérote les étapes, et le contenu reste exploitable ailleurs — une
+  // notification de rappel n'affichera jamais que la première.
+  steps       String[]
+  type        ExerciseType
+  durationMin Int
+  isActive    Boolean      @default(true)
+
+  logs ExerciseLog[]
+
+  @@index([type])
+}
+
+model ExerciseLog {
+  id          String   @id @default(cuid())
+  completedAt DateTime @default(now())
+
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  exerciseId String
+  exercise   Exercise @relation(fields: [exerciseId], references: [id], onDelete: Restrict)
+
+  @@index([userId, completedAt])
+}
+
+// Deux échelles, et rien d'autre. Le champ libre `note` a été retiré à l'ouverture
+// du lot 4 (écart D2 de `modele-de-donnees.md`, E1 de `normes-et-conformite.md`) :
+// F5 ne le demande pas, et un texte libre posé sur une déclaration de ressenti
+// fait entrer des données d'article 9 dans la table même qu'agrègent les vues
+// d'encadrement — sans qu'aucun traitement ne les ait prévues.
+model MoodCheckIn {
+  id        String   @id @default(cuid())
+  date      DateTime @db.Date
+  mood      Int
+  stress    Int
+  createdAt DateTime @default(now())
+
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+}
+
+/// Journal des décisions de consentement — la preuve exigée par l'article 7.1.
+///
+/// Une décision ne se modifie pas : accorder puis retirer écrit deux lignes. La
+/// décision qui fait foi est la plus récente, jamais la première trouvée.
+///
+/// **Le journal survit à son titulaire.** C'était l'écart E3 des normes (D3 du
+/// modèle) : la cascade détruisait, avec le compte, la preuve que le
+/// consentement avait été valablement recueilli — celle-là même qu'il faudrait
+/// produire si le traitement passé était contesté. Le dossier laissait le choix
+/// ouvert entre « trace dissociée » et « suppression assumée » ; la première est
+/// retenue, par la même mécanique que `AccessLog` :
+///
+/// - `userId` est la clé étrangère vivante, passée à `null` à la suppression du
+///   compte ;
+/// - `subjectRef` en est une copie hors clé étrangère, qui ne s'efface jamais et
+///   cesse de désigner quiconque le jour où le compte disparaît.
+///
+/// Ce qui reste après une suppression de compte se lit donc : « le 3 mars,
+/// quelqu'un a consenti à la version v1 ». C'est ce qu'il faut pour prouver, et
+/// pas assez pour identifier — sauf à détenir par ailleurs une sauvegarde de la
+/// table `User`, limite déjà inscrite à l'AIPD pour `AccessLog`.
+///
+/// Reste ouvert, et rattaché à E2 : la durée au terme de laquelle ces lignes
+/// dissociées sont purgées. Aucune durée n'est portée par le schéma aujourd'hui.
+///
+/// `userId` nul **avec** `visitorId` renseigné = décision d'un visiteur non
+/// connecté ; `userId` nul avec `subjectRef` renseigné = titulaire supprimé.
+model Consent {
+  id        String      @id @default(cuid())
+  type      ConsentType
+  granted   Boolean
+  version   String      @default("v1")
+  createdAt DateTime    @default(now())
+
+  /// Référence pseudonyme du titulaire, conservée après la suppression du compte.
+  subjectRef String?
+
+  userId    String?
+  user      User?   @relation(fields: [userId], references: [id], onDelete: SetNull)
+  visitorId String?
+
+  @@index([userId, type, createdAt])
+  @@index([visitorId, type, createdAt])
+  /// Seul chemin d'accès à la preuve une fois le compte effacé : sans lui, la
+  /// produire supposerait de parcourir toute la table.
+  @@index([subjectRef, type, createdAt])
+}
+
+/// Traçabilité RGPD : qui a consulté des données agrégées d'équipe ou d'entreprise.
+///
+/// **Le journal survit à son auteur.** C'était l'écart E4 des normes (D4 du
+/// modèle) : la cascade effaçait, avec le compte d'un manager, la trace de
+/// toutes ses consultations — l'exact inverse de l'engagement de F8, « 100 %
+/// des consultations journalisées ». Un journal qu'une suppression de compte
+/// vide n'est pas opposable, donc inutile.
+///
+/// Deux références coexistent donc, et c'est délibéré :
+///
+/// - `actorId` est la clé étrangère vivante, passée à `null` à la suppression
+///   du compte. Elle sert aux lectures courantes, qui veulent un nom.
+/// - `actorRef` est une **copie hors clé étrangère** du même identifiant. Elle
+///   ne s'efface jamais, et cesse de désigner quiconque le jour où le compte
+///   disparaît : deux entrées du même auteur restent corrélables entre elles,
+///   sans que le journal seul permette de remonter à une personne.
+///
+/// Limite assumée, à inscrire à l'AIPD : qui détient par ailleurs une
+/// sauvegarde de la table `User` peut encore rapprocher les deux. Fermer cette
+/// porte demanderait un condensat à clé, donc un secret de plus à gérer et à
+/// faire tourner — arbitrage rendu au lot 6, en faveur de la simplicité.
+model AccessLog {
+  id        String   @id @default(cuid())
+  action    String
+  target    String?
+  createdAt DateTime @default(now())
+
+  /// Référence pseudonyme, conservée après la suppression du compte.
+  actorRef String
+  /// Rôle au moment de la consultation : c'est lui qui rend le journal lisible
+  /// une fois l'auteur parti, et le rôle peut avoir changé depuis.
+  actorRole Role
+
+  actorId String?
+  actor   User?   @relation(fields: [actorId], references: [id], onDelete: SetNull)
+
+  @@index([actorId, createdAt])
+  @@index([actorRef, createdAt])
+}
+
+model Subscription {
+  id                   String             @id @default(cuid())
+  plan                 Plan               @default(STANDARD)
+  status               SubscriptionStatus @default(INCOMPLETE)
+  seats                Int                @default(1)
+  stripeCustomerId     String?            @unique
+  stripeSubscriptionId String?            @unique
+  currentPeriodEnd     DateTime?
+  updatedAt            DateTime           @updatedAt
+
+  companyId String  @unique
+  company   Company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+}
